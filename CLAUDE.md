@@ -85,7 +85,7 @@ shutdown                           # or Ctrl+C
 - [x] Interviews with Air Force done (see above).
 - [x] Test on x500: `failure gps off` vs `failure gps wrong` (log `logs/18_23_09.ulg`, plot `log_analysis.png`). Results:
   - Both trigger `Failsafe: blind land` exactly ~5.1 s after injection (EKF GPS timeout). PX4 lands in place, does NOT return home.
-  - After `gps off` the drone touched down within ~5 s, but the EKF believed it was still at 1.3 m and drifted 6.8 m horizontally in 80 s while sitting on the ground; landing was never detected (stayed armed). Strong pitch point.
+  - After `gps off` the drone touched down within ~5 s, but the EKF believed it was still at 1.3 m and drifted 6.8 m horizontally in 80 s while sitting on the ground; landing was never detected (stayed armed). NOT reproducible: 2nd run (`logs/19_30_49.ulg`, baylands world, gps off at 80.5 s) → reaction again 5.06 s, landed ~10 s later, landing detected and auto-disarmed, max horizontal error 0.5 m. So in pitch say "can lose track of its own state", not "always". Reaction time ~5 s is solid (2/2 runs).
   - `gps wrong` in gz SIM only drops fix_type 3→2 (coordinates barely change) → PX4 rejects it as low-quality. It is NOT a realistic spoof (real spoofer keeps a good 3D fix). Also this test ran on the ground (drone had already landed).
 - [x] Read .ulg logs in Python (`analyze_log.py`).
 - [x] Detector on real SITL data with injected slow spoof: `log_spoof_detect.py` (plot `log_spoof_result.png`). Uses hover segment 20–112.5 s; IMU (sensor_combined rotated by vehicle_attitude to NED, 50 Hz) + GPS (sensor_gnss, ~1 Hz); smooth drag spoof from t=80 s, good 3D fix kept.
