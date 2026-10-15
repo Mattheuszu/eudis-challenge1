@@ -37,6 +37,7 @@ Pitch line: "When GPS is attacked, our drone detects it and flies home using a m
 - Windows 11, NVIDIA GPU. User home: `C:\Users\den`.
 - Python 3.15 on Windows (if pip wheels fail, use `py install 3.12` and `py -3.12 ...`).
 - WSL2 + **Ubuntu 22.04**, user `den`. Enter with `wsl` from PowerShell.
+- `C:\Users\den\.wslconfig` has `networkingMode=mirrored` (added Thu evening): WSL had no internet after switching to venue Wi-Fi ("No route to host" when Gazebo downloaded baylands models). Mirrored = WSL shares Windows' network; also lets Windows apps (QGroundControl) reach SITL on localhost. Remove the file + `wsl --shutdown` to undo.
 - **PX4-Autopilot** cloned at `~/PX4-Autopilot` (inside Ubuntu), v1.18 beta, `Tools/setup/ubuntu.sh` done, builds fine. Gazebo Harmonic (gz-sim 8).
 - Project folder: `C:\Users\den\hackathon\challenge1` (= `/mnt/c/Users/den/hackathon/challenge1` from WSL). `C:\Users\den\hackathon\MyHackApp` is from an old hackathon — ignore.
 
