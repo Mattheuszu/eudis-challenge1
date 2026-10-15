@@ -6,9 +6,14 @@ Paths in `CLAUDE.md` are from Den's laptop (`C:\Users\den\...`); use wherever yo
 
 ## 1. Setup (10 min, Windows)
 
+Get the code (private repo — Den must add you as a collaborator first, accept the email invite):
 ```
+git clone https://github.com/Mattheuszu/eudis-challenge1.git
+cd eudis-challenge1
 pip install numpy matplotlib pyulog
 ```
+
+Git routine (see "Git workflow" in `CLAUDE.md`): `git pull` before you start, commit + push small steps often, work in your own new files.
 (If Python 3.15 wheels fail: `py install 3.12`, then use `py -3.12 -m pip ...` and `py -3.12 script.py`.)
 
 Check everything works by regenerating the three plots:

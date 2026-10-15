@@ -52,6 +52,12 @@ Pitch line: "When GPS is attacked, our drone detects it and flies home using a m
 - `FRIEND_START.md` — onboarding for the teammate (setup, what to build: demo dashboard, baylands world, slides).
 - Python deps: `pip install numpy matplotlib pyulog`.
 
+## Git workflow
+- Private repo: https://github.com/Mattheuszu/eudis-challenge1 (branch `main`). Den's GitHub: `Mattheuszu`. gh CLI at `C:\Program Files\GitHub CLI\gh.exe` (not on PATH in old shells).
+- Both teammates work on `main` (48 h hackathon, no PR overhead). Always `git pull` before starting; commit + push after each finished step (working script, new plot, updated slides).
+- Avoid conflicts by file ownership: Den = detection / navigation scripts (`spoof_detect.py`, `log_spoof_detect.py`, REMEMBER/RETURN); friend = dashboard, visualisation, slides (new files). Update `CLAUDE.md` Status when something is done.
+- New .ulg logs: keep only useful ones in `logs/` (GitHub limit 100 MB per file; 50 MB warns).
+
 ## PX4 SITL cheat sheet (inside Ubuntu)
 ```
 pkill -f px4; pkill -f gz          # clean up old sim processes
