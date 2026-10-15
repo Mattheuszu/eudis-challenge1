@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Share bundle (everything is in the repo now)
+*.zip
+
+# OS / editor
+Thumbs.db
+.DS_Store
+.vscode/
