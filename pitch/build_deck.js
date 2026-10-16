@@ -144,6 +144,7 @@ async function build() {
   await iconRow(s, 0.6, 3.15, 6.4, fa.FaStopwatch, "“Detect it as soon as possible”", "Both jamming and spoofing, depending on the mission");
   await iconRow(s, 0.6, 4.2, 6.4, fa.FaSnowflake, "“Snow hides the landmarks”", "Pre-made maps stop matching in winter");
   await iconRow(s, 0.6, 5.25, 6.4, fa.FaMapMarkedAlt, "“A drone once built its own map to get home”", "That real case is our starting point");
+  caption(s, "Public evidence: GNSS interference over the Baltic is mapped every day from airliner data (gpsjam.org).", 0.6, 6.35, 6.6);
   picture(s, "log_analysis.png", 7.6, 1.5, 4.55, 1320 / 1200, "PX4 flight log during GPS jamming");
   stat(s, 7.6, 5.85, 2.2, 1.0, "5 s", "autopilot reaction time", C.accent3, 26);
   stat(s, 9.95, 5.85, 2.2, 1.0, "blind", "landing — never flies home", C.accent3, 26);
@@ -344,16 +345,19 @@ async function build() {
   tag(s, "PROGRESS");
   stat(s, 0.6, 1.5, 1.9, 1.05, "4", "expert inputs", C.accent1, 26);
   stat(s, 2.65, 1.5, 1.9, 1.05, "17", "logged iterations", C.accent1, 26);
-  stat(s, 4.7, 1.5, 1.9, 1.05, "30", "commits on GitHub", C.accent1, 26);
-  const done = [
-    "Thu: Air Force interview → tested real PX4 → spoof detector on real flight data",
-    "Fri: live demo, navigation in snow, jammer hunter",
-    "Fri: military feedback → swarm sharing, AI brain, attack defence",
-    "Fri night: 3 PX4 drones live at a military base",
+  stat(s, 4.7, 1.5, 1.9, 1.05, "31", "commits on GitHub", C.accent1, 26);
+  s.addText("WHY IT GETS ADOPTED", { x: 0.6, y: 2.75, w: 6.0, h: 0.35, fontSize: 14, bold: true, color: C.accent1,
+    charSpacing: 2, margin: 0, isTextBox: true });
+  const adopt = [
+    ["Software only: ", "runs on drones that already fly PX4 — no new hardware to buy"],
+    ["Users: ", "armed forces and drone makers building on PX4; procurement via FMV"],
+    ["Dual use: ", "civil drones and aviation in the jammed Baltic"],
+    ["Path: ", "simulation → Terra lab → field test → PX4 plug-in"],
   ];
-  s.addText(done.map((t, i) => ({ text: t, options: { bullet: true, breakLine: i < done.length - 1 } })),
-    { x: 0.6, y: 2.8, w: 6.0, h: 2.2, fontSize: 14, color: C.background2, paraSpaceAfter: 6, margin: 0, valign: "top",
-      isTextBox: true });
+  s.addText(adopt.flatMap(([h, t], i) => [
+      { text: h, options: { bold: true, color: C.background1, bullet: true } },
+      { text: t, options: { color: C.background2, breakLine: i < adopt.length - 1 } }]),
+    { x: 0.6, y: 3.2, w: 6.0, h: 2.1, fontSize: 14, paraSpaceAfter: 6, margin: 0, valign: "top", isTextBox: true });
   s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y: 5.45, w: 6.0, h: 1.15, rectRadius: 0.1, fill: { color: C.text2 },
     line: { color: C.accent5, width: 0.75 }, objectName: "honest limits card" });
   s.addText([
@@ -368,7 +372,8 @@ async function build() {
   await iconRow(s, 7.0, 4.15, 5.75, fa.FaGlobeEurope, "AquaGuard Technologies", "Satellite/SAR imagery as backup map; our jammer reports as their data feed");
   await iconRow(s, 7.0, 5.2, 5.75, fa.FaUserCheck, "Operator in the loop", "Secure drone-to-drone link, human approval for reroutes");
   s.addNotes("4:30–4:50  GULED: In 48 hours: four expert inputs, seventeen logged iterations, every failure documented. " +
-    "Next: real drones in Terra lab, real interference readings from u-blox receivers, and AquaGuard satellite imagery as a backup map.");
+    "It is software only, so it runs on drones that already fly PX4. " +
+    "Next: real drones in Terra lab, real u-blox interference readings, and AquaGuard satellite imagery as a backup map.");
 
   // 13. TEAM + CLOSE ----------------------------------------------------------
   s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Progress and team" });
