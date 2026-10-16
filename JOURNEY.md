@@ -81,6 +81,15 @@ Evidence: commits in this repo, plots, flight logs in `logs/`.
 - Offline run (rule-based brain, same tools): existing system aborts the mission; with the brain the drone locates the jammer, warns the fleet, plans around and **arrives 8 m from the target without ever losing GPS**.
 - Without internet or API key it falls back to rules, so the demo never dies.
 
+### 13. We attacked our own system: fake reports (`swarm_attack.py`)
+- Guled spotted it: once drones trust each other's warnings, an enemy can broadcast a fake one ("jammer is north, fly east") and lure the swarm into a trap. Signatures stop outsiders, but not a **captured drone that still has a valid key**.
+- Built the attack: the captured drone flies over the real jammer and reports "almost quiet here". Undefended, it lured **both** other drones into the jammer.
+- **Attempt 1, outlier vote:** caught nothing or rejected honest drones. The liar had sent *more* readings than a late-starting honest drone, so it won the vote.
+- **Attempt 2, "who breaks the consistency":** still fooled. Early on only the scout has been near the jammer; the liar plus two far-away drones outvote it.
+- **What worked: "a warning is cheap to believe, an all-clear must be proven."** Where a drone really lost GPS, interference must be strong; anyone claiming "quiet" there is lying. The liar was exposed the second the scout lost GPS.
+- 6 random setups: undefended **9 drones lured**, defended **1**; liar caught **6/6**, honest drones wrongly rejected **0**.
+- Honest limit: a subtle liar that stays within normal noise can't be caught by physics alone, but it also can't do much harm.
+
 ## Mentor feedback log
 | When | Who | What they said | What we changed |
 |---|---|---|---|

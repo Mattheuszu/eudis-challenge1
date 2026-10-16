@@ -41,6 +41,7 @@ See the "PX4 SITL cheat sheet" in `CLAUDE.md` for the `pxh>` commands.
 | `log_spoof_detect.py` → `log_spoof_result.png` | Our detector on real PX4 IMU/GPS + injected slow spoof: 0.5 m/s caught in 12.9 s, PX4-style gate misses it; 2/50 false alarms |
 | `demo_control.py` + `sim/demo.sdf` → `demo_screenshot.png` | **Live demo**: fly the PX4 drone with arrow keys, jam GPS with G. World with START helipad and point B. Our monitor ~1 s vs PX4 ~5 s; return home impossible without GPS. Run-sheet: `DEMO.md` |
 | `swarm_reroute.py` → `swarm_reroute.png`, `swarm_reroute.gif` | **New headline after military feedback: DETECT → LOCATE → SHARE → REROUTE.** Scout drone gets jammed and shares; swarm plans around. 8 random runs: swarm 24/24 reach target vs 21/24 alone, 16 s vs 68 s without GPS, 16 % faster; today's autopilot 0/3 |
+| `swarm_attack.py` → `swarm_attack.png` | **Your fake-report question, answered**: a captured drone lies "all quiet here"; undefended it lures 9 drones into the jammer over 6 runs, with our checks 1; liar caught 6/6, no honest drone wrongly rejected |
 | `JOURNEY.md` | Process log for the jury (30 % of score): every step, failures and fixes, mentor feedback table |
 
 Key numbers for slides are in `CLAUDE.md` → Status and "Ideas collected Fri". **Pitch headline changed:** the military already has detect + return home; our new claim is "one drone jammed, the whole swarm learns" (see `CLAUDE.md` → MILITARY FEEDBACK).

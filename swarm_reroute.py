@@ -52,7 +52,16 @@ OUR_ALARM_DELAY = 1.0    # s, our GPS monitor (measured in the live demo)
 PX4_FAILSAFE_DELAY = 5.0 # s, PX4 failsafe (measured in 2/2 SITL flights)
 UPDATE_EVERY = 20        # s between threat-map updates
 NOGO_MARGIN_DB = 3.0     # plan this much "quieter" than GPS_LOST (safety margin)
-NOGO_PROB = 0.15         # avoid cells where GPS dies with > 15 % probability
+# Fake-report attack (Guled's question): a captured drone with a VALID key flies with the
+# swarm and reports invented interference readings, to push the swarm's danger map away
+# from the real jammer so the drones plan straight into it.
+ATTACKER = "Drone 4 (captured)"
+FAKE_JAMMER = np.array([2700.0, 3700.0])   # where the attacker pretends the jammer is
+FAKE_POWER = 72.0                          # dB
+# claimed path straight over the REAL jammer, reporting "almost quiet here" -> hides it
+ATTACK_FROM, ATTACK_TO = np.array([0.0, 2150.0]), np.array([5500.0, 2150.0])
+EVIDENCE_RADIUS = 300.0  # m, readings this close to a real GPS-loss point must show strong jamming
+NOGO_PROB = 0.15        # avoid cells where GPS dies with > 15 % probability
 DEAD_RADIUS = 450.0      # m, around every point where a drone actually lost GPS = surely no-go
 CLEAR_AFTER_GPS = 12     # s, keep backing out after GPS returns before planning
 TARGET = np.array([5500.0, 2000.0])
@@ -99,31 +108,32 @@ CANDS = np.stack([LGE.ravel(), LGN.ravel()], 1)
 class Threat:
     """Pooled interference readings -> plausible jammer positions -> no-go mask."""
 
-    def __init__(self):
-        self.pts, self.levels = [], []
+    def __init__(self, defense=False):
+        self.pts, self.levels, self.senders = [], [], []
         self.mask = np.zeros(PGE.shape, bool)
         self.version = 0
         self.area_km2 = 0.0
         self.best = None
         self._n_used = 0
         self.dead = []          # where drones actually lost GPS (hard evidence)
+        self.defense = defense  # consistency check against the other drones' readings
+        self.rejected = {}      # sender -> reason it was rejected
 
     def mark_dead(self, pos):
         self.dead.append(pos.copy())
         self._n_used = -1
 
-    def add(self, pos, level):
+    def add(self, pos, level, sender="?"):
         self.pts.append(pos.copy())
         self.levels.append(level)
+        self.senders.append(sender)
         if len(self.pts) > MAX_READINGS:      # thin out: keep every second reading
-            self.pts, self.levels = self.pts[::2], self.levels[::2]
+            self.pts, self.levels, self.senders = self.pts[::2], self.levels[::2], self.senders[::2]
             self._n_used = -1
 
-    def update(self):
-        if len(self.pts) < 8 or len(self.pts) == self._n_used:
-            return False
-        self._n_used = len(self.pts)
-        pts, lev = np.array(self.pts), np.array(self.levels)
+    @staticmethod
+    def fit(pts, lev):
+        """Grid search: for every candidate jammer position the best power and the squared error."""
         fall = -10 * np.log10(((pts[None] - CANDS[:, None]) ** 2).sum(-1) + FLY_HEIGHT**2)
         sse = np.full(len(CANDS), np.inf)
         power = np.zeros(len(CANDS))
@@ -131,6 +141,68 @@ class Threat:
             s = ((lev - heard(p + fall)) ** 2).sum(1)
             better = s < sse
             sse[better], power[better] = s[better], p
+        return sse, power
+
+    def check_senders(self, pts, lev, snd):
+        """Leave-one-sender-out consistency test (works even if the liar has a valid key).
+        Fit ONE jammer to everyone else, then to everyone else + this sender. Honest
+        readings fit the same physics, so the joint error grows only by their own noise
+        (about n * SHADOWING^2). A liar's readings can't be explained by the same jammer,
+        so the joint error jumps. Reject when the jump is beyond a 99.9 % noise level."""
+        keep = np.ones(len(lev), bool)
+
+        # 1. Hard evidence: where a drone REALLY lost GPS the interference was >= GPS_LOST_DB.
+        #    A sender claiming "almost quiet" right there contradicts physics -> liar.
+        #    (Fake WARNINGS are not checked here: believing them only costs a detour.)
+        if self.dead:
+            dead = np.array(self.dead)
+            near = (((pts[:, None] - dead[None]) ** 2).sum(-1) < EVIDENCE_RADIUS**2).any(1)
+            for s in [s for s in dict.fromkeys(snd) if s not in self.rejected]:
+                sel = near & (snd == s)
+                if sel.sum() >= 3 and np.median(lev[sel]) < GPS_LOST_DB - 2 * SHADOWING:
+                    self.rejected[s] = (f"claims {np.median(lev[sel]):.0f} dB where another drone really lost GPS "
+                                        f"(needs >= {GPS_LOST_DB:.0f} dB)")
+
+        # 2. Consistency: can ONE jammer explain everyone's readings?
+        def misfit(sel):
+            """Normalised error of ONE jammer explaining these readings: ~1 if consistent."""
+            n = int(sel.sum())
+            return self.fit(pts[sel], lev[sel])[0].min() / (SHADOWING**2 * max(n - 3, 1)), n
+
+        while True:     # is the trusted set consistent? if not, drop the sender whose removal fixes it
+            names = [s for s in dict.fromkeys(snd) if s not in self.rejected]
+            trusted = np.isin(snd, names)
+            q_all, n_all = misfit(trusted)
+            if q_all < 1 + 3.1 * math.sqrt(2 / n_all):     # within 99.9 % of honest noise: done
+                break
+            best, best_q = None, q_all
+            for s in names:
+                rest = trusted & (snd != s)
+                if (snd == s).sum() < 6 or rest.sum() < 8 or len(set(snd[rest])) < 2:
+                    continue    # not enough independent data to judge this sender yet
+                q, _ = misfit(rest)
+                if q < best_q:
+                    best, best_q = s, q
+            if best is None or best_q > 0.8 * q_all:        # no single sender explains the conflict
+                break
+            mine = trusted & (snd == best)
+            self.rejected[best] = (f"its readings can't be explained by the same jammer as the others' "
+                                   f"(misfit {q_all:.1f} -> {best_q:.1f} without it)")
+        for s in self.rejected:
+            keep &= snd != s
+        return keep
+
+    def update(self):
+        if len(self.pts) < 8 or len(self.pts) == self._n_used:
+            return False
+        self._n_used = len(self.pts)
+        pts, lev = np.array(self.pts), np.array(self.levels)
+        if self.defense:
+            keep = self.check_senders(pts, lev, np.array(self.senders))
+            pts, lev = pts[keep], lev[keep]
+            if len(lev) < 8:
+                return False
+        sse, power = self.fit(pts, lev)
         plaus = np.flatnonzero((sse - sse.min()) / SHADOWING**2 < 5.99)   # 95 % region
         self.best = CANDS[sse.argmin()]
         self.area_km2 = len(plaus) * LOC_CELL**2 / 1e6
@@ -242,14 +314,18 @@ class Drone:
         self.regained = None
 
 
-def run(scenario, log=None):
-    """scenario: 'today', 'alone', 'swarm'. Returns drones, snapshots for animation."""
+def run(scenario, log=None, attack=False, defense=False):
+    """scenario: 'today', 'alone', 'swarm'. attack: a captured drone injects fake readings
+    (swarm only). defense: consistency check rejects senders that contradict the others.
+    Returns drones, shared threat (swarm) and danger-map snapshots for animation."""
     global rng
     rng = np.random.default_rng(SEED)
+    attack_rng = np.random.default_rng(SEED + 99)   # separate, so honest randomness is unchanged
     drones = [Drone(*d) for d in DRONES]
-    shared = Threat()
+    shared = Threat(defense)
     for d in drones:
-        d.threat = shared if scenario == "swarm" else Threat()
+        d.threat = shared if scenario == "swarm" else Threat(defense)
+    reported = set()
     broadcast = False
     snaps = []
     say = (lambda t, s: log.append(f"t={t:4.0f}s  {s}")) if log is not None else (lambda t, s: None)
@@ -278,7 +354,7 @@ def run(scenario, log=None):
             if scenario != "today" and step % READ_EVERY == 0:
                 level = float(heard(jn)) + rng.normal(0, SHADOWING)
                 if level > HEARD_MIN_DB:
-                    d.threat.add(d.est, level)   # tagged with where it THINKS it is
+                    d.threat.add(d.est, level, d.name)   # tagged with where it THINKS it is
 
             # GPS lost -> alarm
             if was and not d.gps:
@@ -313,10 +389,22 @@ def run(scenario, log=None):
                 say(t, f"{d.name}: GPS back after {d.regained - d.lost_at:.0f} s blind (IMU drift {drift:.0f} m). "
                        f"New route around danger zone: {path_len(d.est, d.wps) / 1000:.2f} km to go.")
 
+        # the captured drone: claims positions along its path and invents readings
+        if attack and scenario == "swarm" and step % READ_EVERY == 0:
+            u = ATTACK_TO - ATTACK_FROM
+            claimed = ATTACK_FROM + u * min(1.0, SPEED * t / np.linalg.norm(u))
+            # "almost quiet here": just above the noise floor, so the readings are not filtered out
+            fake = max(float(heard(jn_db(claimed, FAKE_JAMMER, FAKE_POWER))), HEARD_MIN_DB + 1.0)
+            shared.add(claimed, fake + attack_rng.normal(0, 1.0), ATTACKER)
+
         # periodic threat-map update (only once someone has been jammed)
         if step % UPDATE_EVERY == 0 and scenario != "today":
             for th in ({id(d.threat): d.threat for d in drones if scenario == "swarm" and broadcast or d.alarm or d.plan_version}).values():
                 th.update()
+        for who, why in shared.rejected.items():
+            if who not in reported:
+                reported.add(who)
+                say(t, f"CONSISTENCY CHECK: rejected all reports from {who} - {why}.")
         # replan drones that fly with GPS when their map changed
         for d in drones:
             if d.mode == "cruise" and d.gps and t >= d.depart and d.threat.version != d.plan_version:
