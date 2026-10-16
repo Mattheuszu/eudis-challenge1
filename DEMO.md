@@ -41,5 +41,5 @@ Alternative after **G**: press a movement key and release — without GPS the dr
 ## Honest notes (if asked)
 - Detection here is jamming (signal gone), so 1 s is easy; for slow **spoofing** see `log_spoof_result.png` (0.5 m/s caught in ~13 s, PX4-style check misses it).
 - The map shows what the drone **believes**; the real position is in Gazebo.
-- RETURN by breadcrumbs is shown as a 2D prototype (in progress), not yet flying in this simulator.
+- Navigation without GPS (terrain matching, 14.5 m after 8.8 km in snow) and the swarm are separate simulations (`navigation/sim_long.py`, `swarm_reroute.py`), not flying in this live simulator yet.
 - Occasional `vehicle_imu timestamp error` in the terminal = laptop under load, harmless for the demo.
