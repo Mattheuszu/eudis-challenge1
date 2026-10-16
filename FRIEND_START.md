@@ -62,6 +62,9 @@ Key numbers for slides are in `CLAUDE.md` → Status and "Ideas collected Fri". 
 
 Den is building the REMEMBER → RETURN logic (2D prototype) in parallel; don't edit `log_spoof_detect.py` / `spoof_detect.py` without telling him, make new files instead.
 
+## 3a. Your files are in the repo now
+`sim_long.py`, `jammer_hunt.py`, their plots and README are in `navigation/` (added by Den from your zip, credited to you). Still missing: `ai_commander.py`, `gnss_free_nav.py`, the pitch deck — send them the same way, or push them yourself (below).
+
 ## 3b. Put your work into the shared repo (do this now)
 
 Your `gnss_free_nav.py`, `sim_long.py`, `jammer_hunt.py`, their plots/GIF and the pitch deck should be in the repo **under your name**: the commit history is proof of teamwork (20 % of the score), and Den's Claude can then check that the slide numbers match the results.

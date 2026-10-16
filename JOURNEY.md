@@ -51,6 +51,11 @@ Evidence: commits in this repo, plots, flight logs in `logs/`.
 - **Finding from it:** with a slightly worse IMU the drone drifts further than the camera can see, misses a checkpoint and is lost. → Breadcrumbs must be **dense relative to IMU drift**; a better (quantum) IMU allows sparser maps.
 - → Next: REMEMBER → RETURN with the drone's **own** breadcrumbs.
 
+### 8b. Long-range navigation in snow (teammate, `navigation/sim_long.py`)
+- 8.8 km flight without GPS on a snowy day. IMU alone: **1974 m off**. Camera landmarks work on a normal day (16 m) but **in snow the camera recognised 0 of 8 landmarks → 1874 m off** — the Air Force's snow problem, reproduced.
+- **Terrain matching** (laser altimeter height profile vs height map; compares *shape*, so a snow layer doesn't matter): **14.5 m** at the destination. Ambiguous matches (flat ground, look-alike hills) are rejected instead of trusted.
+- Quantum-sensor bonus: a simulated 40× better accelerometer alone ends **70 m** off — better IMU = fewer fixes needed.
+
 ### 9. Interactive live demo (`demo_control.py`, `sim/demo.sdf`)
 - Wanted the jury to *see* the problem, not just plots. Built a demo world (START helipad, visible point B) and a control app: fly with the arrow keys, jam GPS with one key, live map + status.
 - Measured live: **our GPS monitor reacts in ~1 s, PX4 in ~5 s**. After jamming PX4 either blind-descends or (with a pilot) loses position hold; **return home is impossible without GPS**.
