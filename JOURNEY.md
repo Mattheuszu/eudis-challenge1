@@ -49,6 +49,12 @@ Evidence: commits in this repo, plots, flight logs in `logs/`.
 - **Finding from it:** with a slightly worse IMU the drone drifts further than the camera can see, misses a checkpoint and is lost. → Breadcrumbs must be **dense relative to IMU drift**; a better (quantum) IMU allows sparser maps.
 - → Next: REMEMBER → RETURN with the drone's **own** breadcrumbs.
 
+### 9. Interactive live demo (`demo_control.py`, `sim/demo.sdf`)
+- Wanted the jury to *see* the problem, not just plots. Built a demo world (START helipad, visible point B) and a control app: fly with the arrow keys, jam GPS with one key, live map + status.
+- Measured live: **our GPS monitor reacts in ~1 s, PX4 in ~5 s**. After jamming PX4 either blind-descends or (with a pilot) loses position hold; **return home is impossible without GPS**.
+- Breadcrumbs are already recorded and drawn on the map while GPS is trusted → the visual bridge to REMEMBER → RETURN.
+- Problem solved on the way: long PX4 status messages arrived split into 50-char pieces → glued them back.
+
 ## Mentor feedback log
 | When | Who | What they said | What we changed |
 |---|---|---|---|
