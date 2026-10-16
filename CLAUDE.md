@@ -1,5 +1,14 @@
 # EUDIS Defence Hackathon 2026 — Challenge 1 (GNSS-denied navigation)
 
+> **NEW SESSION? START HERE (written Fri 16 Oct, ~21:00).**
+> - It is the last night of a 48 h hackathon. **Pitch deck upload: Sat 17 Oct 12:30 (PPTX, 5 min, only the slides are judged).** Pitch Sat 13:30–15:30.
+> - The deck is DONE as a draft: `pitch/GPS_Under_Attack_pitch.pptx` (12 slides, speaker notes, animated GIFs on slides 1/7/9). Rebuild with `node pitch/build_deck.js` (see Files). Remaining: Den/Guled check it in PowerPoint (F5), polish, rehearse with a timer.
+> - One-page overview of every result: `SHOWCASE_standalone.html`. Process story for the jury: `JOURNEY.md`. Live demo how-to: `DEMO.md`.
+> - Den is a beginner with terminals: always say whether a command goes in **PowerShell** (`PS C:\...>`, our `py ...` apps) or **Ubuntu/WSL** (`den@mattheus...$`, simulator) or **pxh>** (PX4 console). One command per code block.
+> - Simulator: `bash /mnt/c/Users/den/hackathon/challenge1/sim/start_swarm.sh` (3 drones, base world) or `cd ~/PX4-Autopilot && PX4_GZ_WORLD=demo make px4_sitl gz_x500` (1 drone). "PX4 server already running" = an old sim is up → `bash /mnt/c/Users/den/hackathon/challenge1/sim/stop_swarm.sh`.
+> - Git: if the last commits aren't on GitHub yet (venue Wi-Fi broke HTTPS with a certificate error Fri ~20:45), run `git push` from a different network.
+> - Den's usage budget is nearly used up: keep answers short, avoid big screenshots, don't re-run long simulations unless asked.
+
 Context handoff for Claude Code. The user (Den) prefers Russian in chat; code and comments in English.
 
 ## Event
@@ -117,7 +126,7 @@ shutdown                           # or Ctrl+C
 - **Finding:** `gz_x500_flow` in the default world failed: "Number of good matches: 2, desired: 20" → failsafe → Gazebo crashed. The default ground is untextured, so optical flow has nothing to track. This mirrors the snow problem — good pitch point. Fix: textured world, e.g. `PX4_GZ_WORLD=baylands make px4_sitl gz_x500_flow` (or `lawn`; list worlds in `Tools/simulation/gz/worlds`).
 - Common user pitfalls: pasting two commands on one line; running Linux commands in PowerShell or in `pxh>`; `wsl --shutdown` must run in PowerShell (from Ubuntu use `wsl.exe --shutdown`).
 
-## Status (updated Fri 16 Oct, afternoon)
+## Status (updated Fri 16 Oct, ~21:00 — see also the START HERE box at the top)
 Everything below is done unless marked [ ]. One-page overview of all results: `SHOWCASE.html`; process story: `JOURNEY.md`.
 - [x] Python, WSL/Ubuntu, PX4 + Gazebo installed and working; x500 takes off.
 - [x] Interviews with Air Force done (see above).
@@ -138,7 +147,10 @@ Everything below is done unless marked [ ]. One-page overview of all results: `S
 - [x] Quantum-IMU bonus: in `sim_long.py` (40× better accelerometer alone → 70 m after 8.8 km).
 - [x] Jammer hunter (Guled), AI mission brain (Guled, offline run done), swarm reroute (Den), fake-report attack + defences (Den, Guled's question). See Files.
 - [x] Results page `SHOWCASE.html`, process log `JOURNEY.md`, all on GitHub.
-- [ ] **Pitch deck** (Guled; not in repo yet). Upload by **Sat 12:30**, 5 min. Suggested order: Problem (Air Force quotes, Baltic jamming) → what today's autopilot does (5 s, blind landing) → our pipeline DETECT → NAVIGATE → LOCATE → DECIDE → SHARE → REROUTE with one picture each → fake-report attack ("we attacked our own system") → honest limits + future work (satellite maps, 5G, cooperative nav) → team (who built what). Numbers must match `SHOWCASE.html`; use jammer hunter ~120 m typical, not 71 m.
+- [x] **Pitch deck draft** built by Claude for Guled: `pitch/GPS_Under_Attack_pitch.pptx` (see Files). [ ] Guled/Den polish + check in PowerPoint.
+- [x] Animations: satellite map (slide 1), radar replay (slide 7), live Gazebo time-lapse (slide 9) — `media/`, `radar/`.
+- [x] Guled's radar, MagNav, swarm-GPS demos added (`radar/`, `navigation/`).
+- [ ] (old note) Pitch deck Upload by **Sat 12:30**, 5 min. Suggested order: Problem (Air Force quotes, Baltic jamming) → what today's autopilot does (5 s, blind landing) → our pipeline DETECT → NAVIGATE → LOCATE → DECIDE → SHARE → REROUTE with one picture each → fake-report attack ("we attacked our own system") → honest limits + future work (satellite maps, 5G, cooperative nav) → team (who built what). Numbers must match `SHOWCASE.html`; use jammer hunter ~120 m typical, not 71 m.
 - [ ] Record one REAL Claude run of `navigation/ai_commander.py` (needs ANTHROPIC_API_KEY, costs cents) so the slide shows real AI reasoning; otherwise label "rule-based mode". Optional fix: loop treats `max_tokens`/`pause_turn` as finished.
 - [ ] Record backup videos (Win+Alt+R): live demo (`DEMO.md`) jam → blind descent → RTL refused; `swarm_reroute.gif` already exists.
 - [ ] Rehearse the 5-minute pitch with a timer; Den presents detection / swarm / attack, Guled navigation / jammer hunter / AI brain.
