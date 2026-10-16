@@ -40,6 +40,13 @@
   .tl .day::before { display:none; }
   .tl b { font-weight:650; }
   .legend { font-size:13px; color:var(--muted); }
+  .glance { width:100%; border-collapse:collapse; font-size:14.5px; margin-top:8px; }
+  .glance th { text-align:left; font-size:13px; color:var(--muted); font-weight:600; padding:6px 8px;
+               border-bottom:1px solid var(--line); }
+  .glance td { padding:8px; border-bottom:1px solid var(--line); vertical-align:top; }
+  .glance td.r { color:var(--red); } .glance td.g { color:var(--green); font-weight:600; }
+  .todo li { margin:4px 0; }
+  @media (max-width:640px) { .glance { font-size:13px; } .glance th, .glance td { padding:6px 4px; } }
   .dot { display:inline-block; width:9px; height:9px; border-radius:50%; margin:0 4px 0 10px; vertical-align:middle; }
 </style>
 </head>
@@ -51,6 +58,21 @@
   <p class="sub">The military already has detect + return home. Our step: one drone gets jammed, the whole swarm learns and still completes the mission.</p>
 </header>
 <main>
+
+<section>
+  <h2>At a glance</h2>
+  <table class="glance">
+    <tr><th>Step</th><th>Who</th><th>Today's autopilot</th><th>Ours</th></tr>
+    <tr><td><b>Detect</b> jamming</td><td>Den</td><td class="r">5 s, then blind landing</td><td class="g">1 s</td></tr>
+    <tr><td><b>Detect</b> slow spoofing (0.5 m/s)</td><td>Den</td><td class="r">never</td><td class="g">13 s</td></tr>
+    <tr><td><b>Navigate</b> 8.8 km in snow</td><td>Guled</td><td class="r">1974 m off (IMU only)</td><td class="g">14.5 m off (terrain matching)</td></tr>
+    <tr><td><b>Locate</b> the jammer</td><td>Guled</td><td class="r">not done</td><td class="g">~120 m typical (2 drones)</td></tr>
+    <tr><td><b>Decide</b> (AI mission brain)</td><td>Guled</td><td class="r">mission aborted</td><td class="g">mission completed, 8 m from target</td></tr>
+    <tr><td><b>Share + reroute</b> (3-drone swarm)</td><td>Den</td><td class="r">0 / 3 reach target</td><td class="g">24 / 24 (8 runs)</td></tr>
+    <tr><td><b>Fake reports</b> from a captured drone</td><td>Guled's idea, Den</td><td class="r">9 drones lured (no defence)</td><td class="g">1 lured, liar caught 6 / 6</td></tr>
+  </table>
+  <p class="note">All results are simulation: PX4 autopilot in the Gazebo simulator plus Python models. Not real flights.</p>
+</section>
 
 <section>
   <h2>How we got here</h2>
@@ -178,6 +200,18 @@
   <div class="who" style="margin-top:14px">Built by <b>Guled</b> · <span class="file">navigation/gnss_free_nav.py</span>: IMU only 279 m off vs 22 m with 4 known checkpoints</div>
   <img src="navigation/gnss_free_nav_result.png" alt="First GNSS-free navigation sim">
   <p class="note">All results are simulation (PX4 SITL + Python models), not real flights. Process log with every failure and fix: <span class="file">JOURNEY.md</span>.</p>
+</section>
+
+<section>
+  <h2>What's left before Saturday</h2>
+  <ul class="todo">
+    <li><b>Pitch deck</b> (Guled). Upload by <b>Sat 12:30</b>, 5 minutes. Numbers must match this page.</li>
+    <li><b>One real Claude run</b> of the AI mission brain, so the slide shows real AI reasoning (needs an API key, costs cents).</li>
+    <li><b>Backup videos</b> of the live demo (Win+Alt+R), in case the simulator fails on stage.</li>
+    <li><b>Rehearse with a timer.</b> Den: detection, swarm, attack. Guled: navigation, jammer hunter, AI brain.</li>
+    <li><b>Sat 9:00–12:00 live demo:</b> laptop with <span class="file">demo_control.py</span> + Gazebo; ask mentors about Terra lab (real drone + Vicon).</li>
+  </ul>
+  <p class="note">Honest limits to mention if asked: spoofing slower than ~0.1 m/s is not caught; jammer model is free-space (real terrain is messier); the swarm assumes the drone-to-drone radio still works; a liar that stays within normal noise can't be caught by physics alone (but can't do much harm either).</p>
 </section>
 
 </main>
