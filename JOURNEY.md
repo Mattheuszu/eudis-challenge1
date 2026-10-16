@@ -67,4 +67,5 @@ Evidence: commits in this repo, plots, flight logs in `logs/`.
 ## Mentor feedback log
 | When | Who | What they said | What we changed |
 |---|---|---|---|
+| Fri | Participant (networking) | "If the spoofer sends a fake but realistic-looking position, how can you tell?" Den had no clear answer. | Prepared the answer: we don't judge whether a position *looks* real, we check it against physics (IMU) and other sources; a spoofer must stay slower than IMU drift to hide, which bounds the damage. Added a short "how we detect spoofing" script for the pitch Q&A. |
 | | | | |
