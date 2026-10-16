@@ -224,7 +224,7 @@ async function build() {
   stat(s, 0.6, b + 0.3, 1.9, 1.15, "1 974 m", "off: IMU only", C.accent3, 22);
   stat(s, 2.6, b + 0.3, 1.9, 1.15, "1 874 m", "off: camera in snow (0/8 landmarks)", C.accent3, 22);
   stat(s, 4.6, b + 0.3, 2.0, 1.15, "14.5 m", "off: terrain matching", C.accent2, 22);
-  caption(s, "Laser altimeter vs height map: the shape of the hills survives snow. Re-tested on the REAL Bråviken height map (SRTM): backup slide.", 0.6, b + 1.55, 6.0, 0.6);
+  caption(s, "Laser altimeter vs height map: the shape of the hills survives snow. Re-tested on the REAL Bråviken height map (SRTM) — two slides on.", 0.6, b + 1.55, 6.0, 0.6);
   s.addText("LOCATE  ·  every jammer gives itself away", { x: 6.85, y: 1.45, w: 5.9, h: 0.35, fontSize: 14, bold: true,
     color: C.accent1, margin: 0, isTextBox: true });
   b = picture(s, "navigation/jammer_hunt.png", 6.9, 1.95, 5.8, 2200 / 880, "Jammer localisation with two drones");
@@ -297,14 +297,54 @@ async function build() {
     "reports 'all quiet' over the jammer. Undefended, it lured 9 drones into the trap. Our rule: a warning is cheap to believe, " +
     "an all-clear must be proven. Liar caught 6 out of 6, no honest drone rejected.");
 
-  // 10. PROGRESS + PLAN -------------------------------------------------------
+  // 10. INSIDE THE ZONE + MAGNAV (Guled) ----
+  s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Proof" });
+  s.addText("Target inside the zone? The swarm is its own GPS", { placeholder: "title" });
+  tag(s, "INNOVATION");
+  s.addText("SWARM GPS  ·  edge drones keep GPS and range the drone inside", { x: 0.6, y: 1.45, w: 6.0, h: 0.35, fontSize: 14,
+    bold: true, color: C.accent1, margin: 0, isTextBox: true });
+  b = picture(s, "navigation/swarm_gps_result.png", 0.65, 1.95, 5.9, 1995 / 840, "Swarm GPS inside the jammed zone");
+  stat(s, 0.6, b + 0.3, 2.9, 1.15, "59 m → 1 m", "error while observing the target (20 runs)", C.accent2, 24);
+  stat(s, 3.65, b + 0.3, 2.95, 1.15, "2 m", "still, if one edge drone is lost", C.accent2, 24);
+  caption(s, "Radio ranging on the drones' own link — not the band a GPS jammer hits.", 0.6, b + 1.55, 6.0);
+  s.addText("MAGNAV  ·  the Earth's magnetic map can't be jammed", { x: 6.85, y: 1.45, w: 5.9, h: 0.35, fontSize: 14, bold: true,
+    color: C.accent1, margin: 0, isTextBox: true });
+  b = picture(s, "navigation/magnav_result.png", 6.9, 1.95, 5.8, 1995 / 787, "MagNav over land and sea");
+  stat(s, 6.85, b + 0.3, 2.85, 1.15, "202 m", "terrain matching — blind over the sea", C.accent6, 24);
+  stat(s, 9.9, b + 0.3, 2.85, 1.15, "38 m", "terrain + MagNav (typical, 20 km)", C.accent2, 24);
+  caption(s, "It only listens — nothing to jam or spoof. Works over the Baltic, at night, in snow.", 6.85, b + 1.55, 5.9);
+  s.addNotes("3:50–4:10  GULED: But the enemy puts the jammer where it protects something, so the target is often inside. " +
+    "Drones at the edge keep GPS and measure their radio distance to the drone inside: the swarm is its own GPS, 1 metre instead of 59. " +
+    "Over the sea, the Earth's magnetic map still works and can't be jammed.");
+
+
+  // 11. REAL TERRAIN (Guled) ---------------------------------------------------
+  s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Proof" });
+  s.addText("Real terrain: 25 missions over Bråviken, Norrköping", { placeholder: "title" });
+  tag(s, "PROGRESS");
+  b = picture(s, "navigation/real_map/real_map_test.png", 0.65, 1.5, 8.4, 2000 / 850, "Real-map test over Bråviken");
+  caption(s, "Built by Guled · navigation/real_map/ · heights real (NASA SRTM via AWS Terrain Tiles), magnetic map simulated",
+    0.6, b + 0.15, 8.5);
+  s.addText([
+    { text: "Honest finding: ", options: { bold: true, color: C.accent6 } },
+    { text: "real ground is flatter than our simulated hills, and ~21 % of each route is over water. " +
+      "With the drones' radio link jammed too, terrain matching often has nothing to recognise — MagNav halves the error, " +
+      "but it is not a full fix yet.", options: { color: C.background2 } },
+  ], { x: 0.6, y: b + 0.6, w: 8.5, h: 1.1, fontSize: 13, margin: 0, valign: "top", isTextBox: true });
+  stat(s, 9.45, 1.5, 3.3, 1.2, "25 / 25", "within 50 m, radio link working (~4 m typical)", C.accent2, 26);
+  stat(s, 9.45, 2.9, 3.3, 1.2, "0 / 25", "IMU only (~700 m typical)", C.accent3, 26);
+  stat(s, 9.45, 4.3, 3.3, 1.2, "180 → 71 m", "radio jammed too: terrain only vs + MagNav (typical)", C.accent6, 26);
+  stat(s, 9.45, 5.7, 3.3, 1.0, "6 → 8 / 25", "radio jammed too: success", C.accent6, 22);
+  s.addNotes("4:10–4:30  GULED: Then we tested on REAL terrain: the height map of Bråviken near Norrköping. With the radio link working, 25 of 25 missions " +
+    "stay within 50 metres. Honest finding: if the radio is jammed too, flat ground and water are hard — MagNav more than halves the error, but it is not solved yet.");
+  // 12. PROGRESS + PLAN -------------------------------------------------------
   pres.addSection({ title: "Progress and team" });
   s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Progress and team" });
   s.addText("48 hours of progress — and what's next", { placeholder: "title" });
   tag(s, "PROGRESS");
   stat(s, 0.6, 1.5, 1.9, 1.05, "4", "expert inputs", C.accent1, 26);
-  stat(s, 2.65, 1.5, 1.9, 1.05, "16", "logged iterations", C.accent1, 26);
-  stat(s, 4.7, 1.5, 1.9, 1.05, "27", "commits on GitHub", C.accent1, 26);
+  stat(s, 2.65, 1.5, 1.9, 1.05, "17", "logged iterations", C.accent1, 26);
+  stat(s, 4.7, 1.5, 1.9, 1.05, "30", "commits on GitHub", C.accent1, 26);
   const done = [
     "Thu: Air Force interview → tested real PX4 → spoof detector on real flight data",
     "Fri: live demo, navigation in snow, jammer hunter",
@@ -327,12 +367,10 @@ async function build() {
   await iconRow(s, 7.0, 3.1, 5.75, fa.FaSignal, "Real jamming indicators", "u-blox receivers already report interference to PX4");
   await iconRow(s, 7.0, 4.15, 5.75, fa.FaGlobeEurope, "AquaGuard Technologies", "Satellite/SAR imagery as backup map; our jammer reports as their data feed");
   await iconRow(s, 7.0, 5.2, 5.75, fa.FaUserCheck, "Operator in the loop", "Secure drone-to-drone link, human approval for reroutes");
-  s.addNotes("3:50–4:25  GULED: In 48 hours: four expert inputs, sixteen logged iterations, twenty-seven commits — failures included. " +
-    "Honest limits: it is simulation, the jammer model is simple, and the swarm needs its radio link. Next: real drones in Terra lab, " +
-    "real interference readings from u-blox receivers, and AquaGuard satellite imagery as a backup map. " +
-    "(If asked about a target INSIDE the jammed zone or flying over sea: backup slide — swarm as its own GPS, MagNav.)");
+  s.addNotes("4:30–4:50  GULED: In 48 hours: four expert inputs, seventeen logged iterations, every failure documented. " +
+    "Next: real drones in Terra lab, real interference readings from u-blox receivers, and AquaGuard satellite imagery as a backup map.");
 
-  // 11. TEAM + CLOSE ----------------------------------------------------------
+  // 13. TEAM + CLOSE ----------------------------------------------------------
   s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Progress and team" });
   s.addText("Team", { placeholder: "title" });
   tag(s, "TEAM");
@@ -366,54 +404,8 @@ async function build() {
     { text: "If the enemy fakes the warnings, physics exposes the liar.", options: { bold: false } },
   ], { x: 0.95, y: 4.7, w: 11.5, h: 1.8, fontSize: 26, bold: true, color: C.background1, valign: "middle", margin: 0,
     isTextBox: true });
-  s.addNotes("4:25–4:45  GULED: A cyber-security and a computer-engineering student, every step shaped by the people who would use it. " +
-    "DEN: One drone gets jammed — the whole swarm learns. And if the enemy fakes the warnings, physics exposes the liar. Thank you. " +
-    "(~15 s buffer left.)");
+  s.addNotes("4:50–5:00  DEN: One drone gets jammed — the whole swarm learns. And if the enemy fakes the warnings, physics exposes the liar. Thank you.");
 
-  // BACKUP (after the closing slide, not presented): INSIDE THE ZONE + MAGNAV (Guled) ----
-  pres.addSection({ title: "Backup" });
-  s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Backup" });
-  s.addText("Target inside the zone? The swarm is its own GPS", { placeholder: "title" });
-  tag(s, "BACKUP");
-  s.addText("SWARM GPS  ·  edge drones keep GPS and range the drone inside", { x: 0.6, y: 1.45, w: 6.0, h: 0.35, fontSize: 14,
-    bold: true, color: C.accent1, margin: 0, isTextBox: true });
-  b = picture(s, "navigation/swarm_gps_result.png", 0.65, 1.95, 5.9, 1995 / 840, "Swarm GPS inside the jammed zone");
-  stat(s, 0.6, b + 0.3, 2.9, 1.15, "59 m → 1 m", "error while observing the target (20 runs)", C.accent2, 24);
-  stat(s, 3.65, b + 0.3, 2.95, 1.15, "2 m", "still, if one edge drone is lost", C.accent2, 24);
-  caption(s, "Radio ranging on the drones' own link — not the band a GPS jammer hits.", 0.6, b + 1.55, 6.0);
-  s.addText("MAGNAV  ·  the Earth's magnetic map can't be jammed", { x: 6.85, y: 1.45, w: 5.9, h: 0.35, fontSize: 14, bold: true,
-    color: C.accent1, margin: 0, isTextBox: true });
-  b = picture(s, "navigation/magnav_result.png", 6.9, 1.95, 5.8, 1995 / 787, "MagNav over land and sea");
-  stat(s, 6.85, b + 0.3, 2.85, 1.15, "202 m", "terrain matching — blind over the sea", C.accent6, 24);
-  stat(s, 9.9, b + 0.3, 2.85, 1.15, "38 m", "terrain + MagNav (typical, 20 km)", C.accent2, 24);
-  caption(s, "It only listens — nothing to jam or spoof. Works over the Baltic, at night, in snow.", 6.85, b + 1.55, 5.9);
-  s.addNotes("BACKUP — not presented, for Q&A. Guled: the enemy puts the jammer where it protects something — so the target is often inside. Drones waiting at the edge " +
-    "still have GPS and measure their radio distance to the drone inside: the swarm becomes its own GPS, 1 metre instead of 59. " +
-    "And over the sea, where hills disappear, the Earth's magnetic map still works and can't be jammed. " +
-    "(Limits: assumes the drones' own radio link survives; the magnetic map in the demo is fairly strong.)");
-
-
-  // BACKUP: REAL TERRAIN (Guled) ---------------------------------------------------
-  s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Backup" });
-  s.addText("Real terrain: 25 missions over Bråviken, Norrköping", { placeholder: "title" });
-  tag(s, "BACKUP");
-  b = picture(s, "navigation/real_map/real_map_test.png", 0.65, 1.5, 8.4, 2000 / 850, "Real-map test over Bråviken");
-  caption(s, "Built by Guled · navigation/real_map/ · heights real (NASA SRTM via AWS Terrain Tiles), magnetic map simulated",
-    0.6, b + 0.15, 8.5);
-  s.addText([
-    { text: "Honest finding: ", options: { bold: true, color: C.accent6 } },
-    { text: "real ground is flatter than our simulated hills, and ~21 % of each route is over water. " +
-      "With the drones' radio link jammed too, terrain matching often has nothing to recognise — MagNav halves the error, " +
-      "but it is not a full fix yet.", options: { color: C.background2 } },
-  ], { x: 0.6, y: b + 0.6, w: 8.5, h: 1.1, fontSize: 13, margin: 0, valign: "top", isTextBox: true });
-  stat(s, 9.45, 1.5, 3.3, 1.2, "25 / 25", "within 50 m, radio link working (~4 m typical)", C.accent2, 26);
-  stat(s, 9.45, 2.9, 3.3, 1.2, "0 / 25", "IMU only (~700 m typical)", C.accent3, 26);
-  stat(s, 9.45, 4.3, 3.3, 1.2, "180 → 71 m", "radio jammed too: terrain only vs + MagNav (typical)", C.accent6, 26);
-  stat(s, 9.45, 5.7, 3.3, 1.0, "6 → 8 / 25", "radio jammed too: success", C.accent6, 22);
-  s.addNotes("BACKUP — for Q&A ('is this only on made-up terrain?'). Guled: we re-ran navigation on REAL heights of Bråviken near Norrköping, " +
-    "25 random missions with a jammer on the target. With the edge drones' radio working: 25 of 25 within 50 m, about 4 m. " +
-    "If the enemy jams the radio too, the flat bay and plain are hard: 6 of 25 with terrain only; MagNav cuts the typical error " +
-    "from 180 to 71 m, 8 of 25. Honest: the magnetic map is simulated, heights are 20-30 m detail.");
   await pres.writeFile({ fileName: OUT });
   if (APPLY_THEME) {
     const { applyTheme } = require(APPLY_THEME);
