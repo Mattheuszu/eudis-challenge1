@@ -35,8 +35,8 @@
 <body>
 <header>
   <h1>GPS Under Attack</h1>
-  <p class="sub">EUDIS Defence Hackathon 2026 · Challenge 1 (GNSS-denied navigation) · Den + teammate</p>
-  <div class="flow"><span>DETECT</span><span>→ NAVIGATE</span><span>→ LOCATE</span><span>→ SHARE</span><span>→ REROUTE</span></div>
+  <p class="sub">EUDIS Defence Hackathon 2026 · Challenge 1 (GNSS-denied navigation) · Den + Guled</p>
+  <div class="flow"><span>DETECT</span><span>→ NAVIGATE</span><span>→ LOCATE</span><span>→ DECIDE</span><span>→ SHARE</span><span>→ REROUTE</span></div>
   <p class="sub">The military already has detect + return home. Our step: one drone gets jammed, the whole swarm learns and still completes the mission.</p>
 </header>
 <main>
@@ -77,7 +77,7 @@
 
 <section>
   <h2>4. 8.8 km without GPS, in snow</h2>
-  <div class="who">Built by <b>teammate</b> · <span class="file">navigation/sim_long.py</span></div>
+  <div class="who">Built by <b>Guled</b> · <span class="file">navigation/sim_long.py</span></div>
   <div class="nums">
     <div class="num bad"><div class="v">1974 m</div><div class="l">IMU only</div></div>
     <div class="num bad"><div class="v">1874 m</div><div class="l">camera in snow (0/8 landmarks)</div></div>
@@ -89,7 +89,7 @@
 
 <section>
   <h2>5. Jammer hunter: drones as sensors</h2>
-  <div class="who">Built by <b>teammate</b> · <span class="file">navigation/jammer_hunt.py</span></div>
+  <div class="who">Built by <b>Guled</b> · <span class="file">navigation/jammer_hunt.py</span></div>
   <div class="nums">
     <div class="num"><div class="v">~300 m</div><div class="l">one drone (typical)</div></div>
     <div class="num good"><div class="v">~120 m</div><div class="l">two drones (typical, 10 runs)</div></div>
@@ -98,7 +98,19 @@
 </section>
 
 <section>
-  <h2>6. One drone jammed, the whole swarm learns</h2>
+  <h2>6. AI mission brain: assess, tell others, find a way</h2>
+  <div class="who">Built by <b>Guled</b> · <span class="file">navigation/ai_commander.py</span> (Claude, or offline rules)</div>
+  <div class="nums">
+    <div class="num bad"><div class="v">aborted</div><div class="l">existing system: flies home</div></div>
+    <div class="num good"><div class="v">8 m</div><div class="l">from target, mission completed</div></div>
+    <div class="num good"><div class="v">0 s</div><div class="l">without GPS (acted before GPS died)</div></div>
+  </div>
+  <img src="navigation/ai_mission.png" alt="AI mission brain run">
+  <p class="note">The AI decides what to do; tested code decides how to fly it. Every action passes a safety check (battery reserve, limits). Shown: offline rule-based brain.</p>
+</section>
+
+<section>
+  <h2>7. One drone jammed, the whole swarm learns</h2>
   <div class="who">Built by <b>Den</b> · <span class="file">swarm_reroute.py</span> (after military feedback)</div>
   <div class="nums">
     <div class="num bad"><div class="v">0 / 3</div><div class="l">today: drones lost in jammed area</div></div>
@@ -111,9 +123,11 @@
 </section>
 
 <section>
-  <h2>7. First idea: toy model</h2>
+  <h2>8. First ideas</h2>
   <div class="who">Built by <b>Den</b> · <span class="file">spoof_detect.py</span></div>
   <img src="result.png" alt="Toy model of spoofing detection">
+  <div class="who" style="margin-top:14px">Built by <b>Guled</b> · <span class="file">navigation/gnss_free_nav.py</span>: IMU only 279 m off vs 22 m with 4 known checkpoints</div>
+  <img src="navigation/gnss_free_nav_result.png" alt="First GNSS-free navigation sim">
   <p class="note">All results are simulation (PX4 SITL + Python models), not real flights. Process log with every failure and fix: <span class="file">JOURNEY.md</span>.</p>
 </section>
 

@@ -1,0 +1,13 @@
+[t=    0 s] MISSION: Launch. Reconnaissance flight to [8000.0, 2500.0].
+[t=  159 s] DETECT: Jamming detected (8.0 dB). Handing over to the mission brain.
+[t=  159 s] BRAIN (rules): Jamming is rising ahead and the jammer position is unknown. Battery allows a short orbit, so measure first, then decide.
+[t=  159 s] ACTION: circle_and_measure {"radius_m": 800, "laps": 1}
+[t=  440 s] RESULT: {"jammer_estimate_east_north_m": [5900, 3300], "distance_from_drone_m": 3457, "bearing_deg": 37, "uncertainty_area_km2_95pct": 8.98, "gps_lost_within_m": 1253, "readings_used": 440, "time_spent_s": 281, "battery_left_km": 21.2}
+[t=  440 s] ACTION: broadcast {"recipient": "all", "priority": "flash", "message": "GNSS jammer est. at E5900 N3300 (±8.98 km²). GPS lost within 1253 m. Avoid. Rerouting to continue mission."}
+[t=  440 s] BROADCAST to all [FLASH]: GNSS jammer est. at E5900 N3300 (±8.98 km²). GPS lost within 1253 m. Avoid. Rerouting to continue mission.
+[t=  440 s] ACTION: plan_route {"goal": "destination", "safety_margin_m": 400}
+[t=  440 s] RESULT: {"route_id": "R1", "goal": "destination", "length_km": 6.9, "battery_after_km": 14.3, "battery_ok": true, "share_over_hilly_ground": 1.0, "closest_to_estimated_jammer_m": 2247, "keep_out_radius_m": 1653}
+[t=  440 s] ACTION: fly_route {"route_id": "R1"}
+[t=  786 s] RESULT: {"arrived": true, "real_distance_to_goal_m": 8, "time_s": 346, "seconds_without_gps": 0, "battery_left_km": 14.3}
+[t=  786 s] ACTION: broadcast {"recipient": "operator", "priority": "priority", "message": "Arrived at destination: 8 m from goal, 0 s without GPS, 14.3 km battery left."}
+[t=  786 s] BROADCAST to operator [PRIORITY]: Arrived at destination: 8 m from goal, 0 s without GPS, 14.3 km battery left.

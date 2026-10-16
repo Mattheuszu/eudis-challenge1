@@ -1,4 +1,4 @@
-# Start here (for the teammate and their Claude Code)
+# Start here (for Guled and his Claude Code)
 
 You are joining Den's EUDIS Defence Hackathon project (Challenge 1, GNSS-denied navigation).
 **Read `CLAUDE.md` first**: it has the event, deadlines, concept, Air Force interview, results and status.
@@ -63,7 +63,7 @@ Key numbers for slides are in `CLAUDE.md` → Status and "Ideas collected Fri". 
 Den is building the REMEMBER → RETURN logic (2D prototype) in parallel; don't edit `log_spoof_detect.py` / `spoof_detect.py` without telling him, make new files instead.
 
 ## 3a. Your files are in the repo now
-`sim_long.py`, `jammer_hunt.py`, their plots and README are in `navigation/` (added by Den from your zip, credited to you). Still missing: `ai_commander.py`, `gnss_free_nav.py`, the pitch deck — send them the same way, or push them yourself (below).
+`sim_long.py`, `jammer_hunt.py`, their plots and README are in `navigation/` (added by Den from your zip, credited to you). `ai_commander.py` and `gnss_free_nav.py` were added too (13:35). Still missing: the pitch deck — send it the same way, or push it yourself (below).
 
 ## 3b. Put your work into the shared repo (do this now)
 
@@ -86,4 +86,4 @@ Pitch numbers to keep consistent with Den's results: jamming detected by our mon
 
 ## 4. Prompt to paste into your Claude Code
 
-> Read CLAUDE.md and FRIEND_START.md in this folder. I'm Den's teammate, I own visualisation, the demo dashboard and slides. First regenerate the three plots to check my setup, then help me build a demo dashboard that replays logs/18_23_09.ulg as an animation with a top-down map and a GPS TRUSTED / SPOOFING DETECTED status. Explain things simply, I'm a beginner.
+> Read CLAUDE.md and FRIEND_START.md in this folder. I'm Guled, Den's teammate. I own visualisation, the demo dashboard and slides. First regenerate the three plots to check my setup, then help me build a demo dashboard that replays logs/18_23_09.ulg as an animation with a top-down map and a GPS TRUSTED / SPOOFING DETECTED status. Explain things simply, I'm a beginner.

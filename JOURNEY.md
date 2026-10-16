@@ -35,7 +35,7 @@ Evidence: commits in this repo, plots, flight logs in `logs/`.
 
 ### 6. Infrastructure problems we solved
 - Simulator lost internet after switching to venue Wi-Fi → switched WSL to mirrored networking.
-- Set up a shared GitHub repo + onboarding guide so the teammate can work in parallel.
+- Set up a shared GitHub repo + onboarding guide so Guled can work in parallel.
 
 ## Fri 16 Oct
 
@@ -46,12 +46,12 @@ Evidence: commits in this repo, plots, flight logs in `logs/`.
 
 - Another participant: companies already sell pre-loaded maps for drones (landmark matching). → Confirms map matching is real and used; sharpened our positioning: **trust layer + fresh own map**, complementary to pre-loaded maps (which can be outdated or snow-covered).
 
-### 8. Teammate's GNSS-free navigation sim
-- Teammate built a sim: IMU-only vs IMU + known checkpoints (279 m → 22 m miss).
+### 8. Guled's GNSS-free navigation sim
+- Guled built a sim: IMU-only vs IMU + known checkpoints (279 m → 22 m miss).
 - **Finding from it:** with a slightly worse IMU the drone drifts further than the camera can see, misses a checkpoint and is lost. → Breadcrumbs must be **dense relative to IMU drift**; a better (quantum) IMU allows sparser maps.
 - → Next: REMEMBER → RETURN with the drone's **own** breadcrumbs.
 
-### 8b. Long-range navigation in snow (teammate, `navigation/sim_long.py`)
+### 8b. Long-range navigation in snow (Guled, `navigation/sim_long.py`)
 - 8.8 km flight without GPS on a snowy day. IMU alone: **1974 m off**. Camera landmarks work on a normal day (16 m) but **in snow the camera recognised 0 of 8 landmarks → 1874 m off** — the Air Force's snow problem, reproduced.
 - **Terrain matching** (laser altimeter height profile vs height map; compares *shape*, so a snow layer doesn't matter): **14.5 m** at the destination. Ambiguous matches (flat ground, look-alike hills) are rejected instead of trusted.
 - Quantum-sensor bonus: a simulated 40× better accelerometer alone ends **70 m** off — better IMU = fewer fixes needed.
@@ -62,7 +62,7 @@ Evidence: commits in this repo, plots, flight logs in `logs/`.
 - Breadcrumbs are already recorded and drawn on the map while GPS is trusted → the visual bridge to REMEMBER → RETURN.
 - Problem solved on the way: long PX4 status messages arrived split into 50-char pieces → glued them back.
 
-### 10. Jammer hunter — the drones become sensors (teammate)
+### 10. Jammer hunter — the drones become sensors (Guled)
 - Idea: GPS receivers measure interference; closer to the jammer = louder. Two drones without GPS (positions from terrain navigation) log it and locate the jammer.
 - **First version was overconfident**: it claimed certainty but was often wrong. Fixed the measurement model; now the real jammer is inside the "95 % sure" area in 9–10 of 10 runs.
 - One drone: ~300 m typical, sometimes picks the mirror spot on the other side of its route (2.3 km off). **Two drones: ~120 m typical, worst 224 m.**
@@ -75,9 +75,15 @@ Evidence: commits in this repo, plots, flight logs in `logs/`.
 - **First version: drones looped** in and out of the zone. Two causes: (1) one drone's straight track can't tell which side the jammer is on → the "safe" estimate painted almost the whole map as dangerous; (2) the route planner treated the zone as a wall, so a drone at its edge found no way out and flew straight back in. Fixes: danger = cells where GPS dies with > 15 % probability; zone = expensive, not forbidden; never re-enter where GPS really died.
 - **Checked it isn't a lucky run:** 8 random jammer positions. Swarm 24/24 drones reach the target vs 21/24 alone; time without GPS 16 s (only the scout) vs 68 s; mission 16 % faster, 17 % less distance. Today's autopilot: 0/3.
 
+### 12. AI mission brain (Guled, `navigation/ai_commander.py`)
+- Answer to the military's "find a solution on its own, like an LLM": Claude gets a situation report and can act only through 4 safe tools (circle and measure, plan route, fly route, broadcast). Every call passes a safety check (limits, battery reserve). **The AI decides what; tested code decides how.**
+- Detects the jamming *rising* before GPS actually dies, so it acts early.
+- Offline run (rule-based brain, same tools): existing system aborts the mission; with the brain the drone locates the jammer, warns the fleet, plans around and **arrives 8 m from the target without ever losing GPS**.
+- Without internet or API key it falls back to rules, so the demo never dies.
+
 ## Mentor feedback log
 | When | Who | What they said | What we changed |
 |---|---|---|---|
 | Fri | Participant (networking) | "If the spoofer sends a fake but realistic-looking position, how can you tell?" Den had no clear answer. | Prepared the answer: we don't judge whether a position *looks* real, we check it against physics (IMU) and other sources; a spoofer must stay slower than IMU drift to hide, which bounds the damage. Added a short "how we detect spoofing" script for the pitch Q&A. |
-| Fri midday | Military (via teammate) | They already have spoofing/jamming detection + return-to-base. Want: inform other drones, swarm finds its own way around to still reach the destination ("like an LLM"). | Pivoted headline to DETECT → LOCATE → SHARE → REROUTE, built `swarm_reroute.py`; LLM positioned as mission advisor, deterministic planner flies. |
+| Fri midday | Military (via Guled) | They already have spoofing/jamming detection + return-to-base. Want: inform other drones, swarm finds its own way around to still reach the destination ("like an LLM"). | Pivoted headline to DETECT → LOCATE → SHARE → REROUTE, built `swarm_reroute.py`; LLM positioned as mission advisor, deterministic planner flies. |
 | | | | |
