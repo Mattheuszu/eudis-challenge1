@@ -225,7 +225,7 @@ async function build() {
   stat(s, 0.6, b + 0.3, 1.9, 1.15, "1 974 m", "off: IMU only", C.accent3, 22);
   stat(s, 2.6, b + 0.3, 1.9, 1.15, "1 874 m", "off: camera in snow (0/8 landmarks)", C.accent3, 22);
   stat(s, 4.6, b + 0.3, 2.0, 1.15, "14.5 m", "off: terrain matching", C.accent2, 22);
-  caption(s, "Laser altimeter vs height map: the shape of the hills survives snow. Re-tested on the REAL Bråviken height map (SRTM) — two slides on.", 0.6, b + 1.55, 6.0, 0.6);
+  caption(s, "Laser altimeter vs height map: the shape of the hills survives snow. Re-tested on the REAL Bråviken height map (SRTM) — see slide 10.", 0.6, b + 1.55, 6.0, 0.6);
   s.addText("LOCATE  ·  every jammer gives itself away", { x: 6.85, y: 1.45, w: 5.9, h: 0.35, fontSize: 14, bold: true,
     color: C.accent1, margin: 0, isTextBox: true });
   b = picture(s, "navigation/jammer_hunt.png", 6.9, 1.95, 5.8, 2200 / 880, "Jammer localisation with two drones");
@@ -298,28 +298,7 @@ async function build() {
     "reports 'all quiet' over the jammer. Undefended, it lured 9 drones into the trap. Our rule: a warning is cheap to believe, " +
     "an all-clear must be proven. Liar caught 6 out of 6, no honest drone rejected.");
 
-  // 10. INSIDE THE ZONE + MAGNAV (Guled) ----
-  s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Proof" });
-  s.addText("Target inside the zone? The swarm is its own GPS", { placeholder: "title" });
-  tag(s, "INNOVATION");
-  s.addText("SWARM GPS  ·  edge drones keep GPS and range the drone inside", { x: 0.6, y: 1.45, w: 6.0, h: 0.35, fontSize: 14,
-    bold: true, color: C.accent1, margin: 0, isTextBox: true });
-  b = picture(s, "navigation/swarm_gps_result.png", 0.65, 1.95, 5.9, 1995 / 840, "Swarm GPS inside the jammed zone");
-  stat(s, 0.6, b + 0.3, 2.9, 1.15, "59 m → 1 m", "error while observing the target (20 runs)", C.accent2, 24);
-  stat(s, 3.65, b + 0.3, 2.95, 1.15, "2 m", "still, if one edge drone is lost", C.accent2, 24);
-  caption(s, "Radio ranging on the drones' own link — not the band a GPS jammer hits.", 0.6, b + 1.55, 6.0);
-  s.addText("MAGNAV  ·  the Earth's magnetic map can't be jammed", { x: 6.85, y: 1.45, w: 5.9, h: 0.35, fontSize: 14, bold: true,
-    color: C.accent1, margin: 0, isTextBox: true });
-  b = picture(s, "navigation/magnav_result.png", 6.9, 1.95, 5.8, 1995 / 787, "MagNav over land and sea");
-  stat(s, 6.85, b + 0.3, 2.85, 1.15, "202 m", "terrain matching — blind over the sea", C.accent6, 24);
-  stat(s, 9.9, b + 0.3, 2.85, 1.15, "38 m", "terrain + MagNav (typical, 20 km)", C.accent2, 24);
-  caption(s, "It only listens — nothing to jam or spoof. Works over the Baltic, at night, in snow.", 6.85, b + 1.55, 5.9);
-  s.addNotes("3:50–4:10  GULED: But the enemy puts the jammer where it protects something, so the target is often inside. " +
-    "Drones at the edge keep GPS and measure their radio distance to the drone inside: the swarm is its own GPS, 1 metre instead of 59. " +
-    "Over the sea, the Earth's magnetic map still works and can't be jammed.");
-
-
-  // 11. REAL TERRAIN (Guled) ---------------------------------------------------
+  // 10. REAL TERRAIN (Guled) ---------------------------------------------------
   s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Proof" });
   s.addText("Real terrain: 25 missions over Bråviken, Norrköping", { placeholder: "title" });
   tag(s, "PROGRESS");
@@ -336,8 +315,29 @@ async function build() {
   stat(s, 9.45, 2.9, 3.3, 1.2, "0 / 25", "IMU only (~700 m typical)", C.accent3, 26);
   stat(s, 9.45, 4.3, 3.3, 1.2, "180 → 71 m", "radio jammed too: terrain only vs + MagNav (typical)", C.accent6, 26);
   stat(s, 9.45, 5.7, 3.3, 1.0, "6 → 8 / 25", "radio jammed too: success", C.accent6, 22);
-  s.addNotes("4:10–4:30  GULED: Then we tested on REAL terrain: the height map of Bråviken near Norrköping. With the radio link working, 25 of 25 missions " +
-    "stay within 50 metres. Honest finding: if the radio is jammed too, flat ground and water are hard — MagNav more than halves the error, but it is not solved yet.");
+  s.addNotes("3:50–4:10  GULED: Then we tested on REAL terrain: the height map of Bråviken near Norrköping. With the radio link working, 25 of 25 missions " +
+    "stay within 50 metres. Honest finding: if the radio is jammed too, flat ground and water are hard — adding a magnetometer — MagNav — more than halves the error, but it is not solved yet.");
+  // 11. INSIDE THE ZONE + MAGNAV (Guled) ----
+  s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Proof" });
+  s.addText("Target inside the zone? The swarm is its own GPS", { placeholder: "title" });
+  tag(s, "INNOVATION");
+  s.addText("SWARM GPS  ·  edge drones keep GPS and range the drone inside", { x: 0.6, y: 1.45, w: 6.0, h: 0.35, fontSize: 14,
+    bold: true, color: C.accent1, margin: 0, isTextBox: true });
+  b = picture(s, "navigation/swarm_gps_result.png", 0.65, 1.95, 5.9, 1995 / 840, "Swarm GPS inside the jammed zone");
+  stat(s, 0.6, b + 0.3, 2.9, 1.15, "59 m → 1 m", "error while observing the target (20 runs)", C.accent2, 24);
+  stat(s, 3.65, b + 0.3, 2.95, 1.15, "2 m", "still, if one edge drone is lost", C.accent2, 24);
+  caption(s, "Radio ranging on the drones' own link — not the band a GPS jammer hits.", 0.6, b + 1.55, 6.0);
+  s.addText("MAGNAV  ·  the Earth's magnetic map can't be jammed", { x: 6.85, y: 1.45, w: 5.9, h: 0.35, fontSize: 14, bold: true,
+    color: C.accent1, margin: 0, isTextBox: true });
+  b = picture(s, "navigation/magnav_result.png", 6.9, 1.95, 5.8, 1995 / 787, "MagNav over land and sea");
+  stat(s, 6.85, b + 0.3, 2.85, 1.15, "202 m", "terrain matching — blind over the sea", C.accent6, 24);
+  stat(s, 9.9, b + 0.3, 2.85, 1.15, "38 m", "terrain + MagNav (typical, 20 km)", C.accent2, 24);
+  caption(s, "It only listens — nothing to jam or spoof. Works over the Baltic, at night, in snow.", 6.85, b + 1.55, 5.9);
+  s.addNotes("4:10–4:30  GULED: But the enemy puts the jammer where it protects something, so the target is often inside. " +
+    "Drones at the edge keep GPS and measure their radio distance to the drone inside: the swarm is its own GPS, 1 metre instead of 59. " +
+    "And MagNav, the Earth's magnetic map, works over the sea and can't be jammed.");
+
+
   // 12. PROGRESS + PLAN -------------------------------------------------------
   pres.addSection({ title: "Progress and team" });
   s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Progress and team" });
