@@ -90,6 +90,12 @@ Evidence: commits in this repo, plots, flight logs in `logs/`.
 - 6 random setups: undefended **9 drones lured**, defended **1**; liar caught **6/6**, honest drones wrongly rejected **0**.
 - Honest limit: a subtle liar that stays within normal noise can't be caught by physics alone, but it also can't do much harm.
 
+### 14. Den tested the live demo himself → 3 bugs fixed
+- **W/A/S/D did nothing:** they only worked in manual mode, and only the arrow keys switched to it. Now WASD fly like in games, R/F up/down, Q/E rotate, any movement key takes manual control.
+- **"Home" flew to the wrong place:** PX4 moves its "home" to wherever the drone is armed, so after landing near B and taking off again, "home" was near B. Now the app remembers START once and flies there itself, then lands. Tested: back at START within 0.4 m.
+- **Quit only worked with keyboard focus:** added mouse buttons for every action.
+- Added **camera views** in Gazebo (chase behind the drone, close, top-down, side, overview) so the jury sees the flight like a drone feed.
+
 ## Mentor feedback log
 | When | Who | What they said | What we changed |
 |---|---|---|---|

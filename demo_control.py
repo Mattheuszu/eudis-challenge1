@@ -9,14 +9,16 @@ Start the simulator first (inside Ubuntu):
 Then on Windows:
     py demo_control.py
 
-Keys (click the window first so it has keyboard focus):
-    T          take off (5 m)          B   fly to point B automatically
-    Arrows     fly North/South/West/East (map directions, switches to Position mode)
-    W / S      climb / descend          A / D  rotate left / right
-    G          jam GPS on/off           H   return home (RTL)
-    L          land                     X   force disarm (motors off)
-    C          clear track              Esc quit
+Everything also has a button (click with the mouse). Keys work when the
+app window has focus (click it once):
+    W A S D / arrows   fly North / West / South / East (map directions; takes manual control)
+    R / F              climb / descend          Q / E   rotate left / right
+    T  take off (5 m)          B  fly to point B         H  fly home to START and land
+    L  land here               G  jam GPS on/off         X  motors off (emergency)
+    1-5  Gazebo camera: chase, close, top, side, overview
+    C  clear track             Esc  quit
 """
+import subprocess
 import math
 import os
 import struct
@@ -40,6 +42,14 @@ CRUISE_ALT = 5.0                     # m above home, used for "fly to B"
 STICK = 500                          # manual stick deflection (of 1000) for arrow keys
 GPS_SILENT_LIMIT = 1.0               # s without a good GPS fix -> our monitor raises the alarm
 BREADCRUMB_SPACING = 3.0             # m between breadcrumbs while GPS is trusted
+GZ_MODEL = "x500_0"                  # drone name in Gazebo
+CAMERA_VIEWS = {                     # follow offsets from the drone, metres (Gazebo: x East, y North, z up)
+    "1": ("Chase (behind)", None),   # computed from heading
+    "2": ("Close", (-2.0, -2.0, 2.0)),
+    "3": ("Top-down", (0.1, 0.0, 35.0)),
+    "4": ("Side", (0.0, -14.0, 3.0)),
+    "5": ("Overview", (-28.0, -28.0, 22.0)),
+}
 MAP_EAST = (-12, 42)
 MAP_NORTH = (-12, 34)
 # -------------------------------------------
@@ -66,7 +76,8 @@ class Drone:
         self.n = self.e = self.alt = self.speed = 0.0
         self.pos_valid = False
         self.yaw = 0.0
-        self.home = None                  # (lat, lon, alt_m)
+        self.home = None                  # (lat, lon, alt_m) of START, locked at first contact
+        # PX4 moves its own "home" to wherever the drone is armed; we keep START fixed
         self.gps_fix = 0
         self.gps_sats = 0
         self.gps_ne = None
@@ -119,7 +130,7 @@ class Drone:
                     self.pos_valid = True
                 elif t == "ATTITUDE":
                     self.yaw = msg.yaw
-                elif t == "HOME_POSITION":
+                elif t == "HOME_POSITION" and self.home is None:
                     self.home = (msg.latitude / 1e7, msg.longitude / 1e7, msg.altitude / 1000.0)
                 elif t == "GPS_RAW_INT":
                     self.gps_fix, self.gps_sats = msg.fix_type, msg.satellites_visible
@@ -204,36 +215,97 @@ class Drone:
                      mavutil.mavlink.FAILURE_TYPE_OK if on else mavutil.mavlink.FAILURE_TYPE_OFF, 0)
 
 
+class GazeboCamera:
+    """Moves the Gazebo window's camera (it follows the drone) via `gz service` inside WSL.
+    Calls run in a background thread so the app never freezes; only the newest request is sent."""
+
+    def __init__(self):
+        self.view = "2"
+        self.pending = None
+        self.last_sent = None
+        self.ok = None              # None = not tried yet, True/False = last call worked
+        self.wake = threading.Event()
+        threading.Thread(target=self._worker, daemon=True).start()
+
+    def _gz(self, service, reqtype, req):
+        cmd = ["wsl.exe", "-e", "env", "GZ_IP=127.0.0.1", "gz", "service", "-s", service,
+               "--reqtype", reqtype, "--reptype", "gz.msgs.Boolean", "--timeout", "3000", "--req", req]
+        try:
+            r = subprocess.run(cmd, capture_output=True, text=True, timeout=10,
+                               creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+            return "true" in r.stdout
+        except Exception:
+            return False
+
+    def _worker(self):
+        while True:
+            self.wake.wait()
+            self.wake.clear()
+            offset, self.pending = self.pending, None
+            if offset is None:
+                continue
+            self._gz("/gui/follow", "gz.msgs.StringMsg", f'data: "{GZ_MODEL}"')
+            self.ok = self._gz("/gui/follow/offset", "gz.msgs.Vector3d",
+                               f"x: {offset[0]:.1f}, y: {offset[1]:.1f}, z: {offset[2]:.1f}")
+            self.last_sent = offset
+
+    def chase_offset(self, yaw):
+        # 8 m behind and 3 m above the drone; PX4 yaw is from North, clockwise -> Gazebo x=East, y=North
+        return (-8.0 * math.sin(yaw), -8.0 * math.cos(yaw), 3.0)
+
+    def set_view(self, key, yaw=0.0):
+        self.view = key
+        offset = CAMERA_VIEWS[key][1] or self.chase_offset(yaw)
+        self.pending = offset
+        self.wake.set()
+
+    def tick(self, yaw):
+        """Chase view: re-aim behind the drone when it has turned."""
+        if self.view != "1" or self.last_sent is None or self.pending is not None:
+            return
+        want = self.chase_offset(yaw)
+        if math.hypot(want[0] - self.last_sent[0], want[1] - self.last_sent[1]) > 2.0:   # ~15 degrees
+            self.pending = want
+            self.wake.set()
+
+
 drone = Drone()
+camera = GazeboCamera()
 keys = set()
 state = {"jam_t": None, "monitor_t": None, "px4_t": None, "jammed": False,
          "track_ok": ([], []), "track_bad": ([], []), "gps_pts": ([], []), "crumbs": ([], []),
-         "setup_done": False, "prev_gps_ok": True}
+         "setup_done": False, "prev_gps_ok": True, "homing": False}
 drone.last_failsafe = None
 
+MOVE_KEYS = {"up", "down", "left", "right", "w", "a", "s", "d", "r", "f", "q", "e", "pageup", "pagedown"}
+MANUAL_MODES = ("POSITION", "ALTITUDE", "MANUAL", "STABILIZED")
 
-def on_press(ev):
-    k = (ev.key or "").lower()
-    keys.add(k)
-    if k == "escape":
+
+def act(action):
+    """Every action is reachable from a key and from a button."""
+    if action == "quit":
         drone.running = False
         plt.close("all")
-    elif k == "t":
+    elif action == "takeoff":
         drone.log("> take off")
         drone.takeoff()
-    elif k == "b":
+    elif action == "b":
+        state["homing"] = False
         drone.log("> fly to point B")
         drone.goto(B_NORTH, B_EAST)
-    elif k == "h":
-        drone.log("> return home (RTL)")
-        drone.set_mode(4, 5)
-    elif k == "l":
-        drone.log("> land")
+    elif action == "home":
+        drone.log("> fly home to START, then land")
+        state["homing"] = True
+        drone.goto(0.0, 0.0)          # START is locked at first contact, not PX4's moving "home"
+    elif action == "land":
+        state["homing"] = False
+        drone.log("> land here")
         drone.set_mode(4, 6)
-    elif k == "x":
-        drone.log("> force disarm")
+    elif action == "disarm":
+        state["homing"] = False
+        drone.log("> motors off")
         drone.command(mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, 21196)
-    elif k == "g":
+    elif action == "jam":
         state["jammed"] = not state["jammed"]
         drone.gps(on=not state["jammed"])
         if state["jammed"]:
@@ -242,37 +314,80 @@ def on_press(ev):
             drone.last_failsafe = None
         else:
             drone.log("> GPS jamming stopped")
-    elif k == "c":
+    elif action == "clear":
         for v in ("track_ok", "track_bad", "gps_pts", "crumbs"):
             state[v] = ([], [])
-    elif k in ("up", "down", "left", "right") and drone.mode not in ("POSITION", "ALTITUDE", "MANUAL", "STABILIZED"):
-        drone.set_mode(3)   # pilot takes over: Position mode (PX4 falls back to Altitude without GPS)
+    elif action in CAMERA_VIEWS:
+        drone.log(f"> camera: {CAMERA_VIEWS[action][0]}")
+        camera.set_view(action, drone.yaw)
+
+
+KEY_ACTIONS = {"escape": "quit", "t": "takeoff", "b": "b", "h": "home", "l": "land", "x": "disarm",
+               "g": "jam", "c": "clear", **{k: k for k in CAMERA_VIEWS}}
+
+
+def on_press(ev):
+    k = (ev.key or "").lower()
+    keys.add(k)
+    if k in KEY_ACTIONS:
+        act(KEY_ACTIONS[k])
+    elif k in MOVE_KEYS:
+        state["homing"] = False
+        if drone.mode not in MANUAL_MODES:
+            drone.set_mode(3)   # pilot takes over: Position mode (PX4 falls back to Altitude without GPS)
 
 
 def on_release(ev):
     keys.discard((ev.key or "").lower())
 
 
+def held(*names):
+    return any(n in keys for n in names)
+
+
 def update_sticks():
-    north = ("up" in keys) - ("down" in keys)
-    east = ("right" in keys) - ("left" in keys)
-    # Arrow keys are map directions; sticks are in the drone's body frame -> rotate by yaw
+    north = held("up", "w") - held("down", "s")
+    east = held("right", "d") - held("left", "a")
+    # Keys are map directions; sticks are in the drone's body frame -> rotate by yaw
     c, s = math.cos(drone.yaw), math.sin(drone.yaw)
     pitch = STICK * (north * c + east * s)
     roll = STICK * (-north * s + east * c)
-    throttle = 500 + 300 * (("w" in keys) - ("s" in keys))
-    yaw = 400 * (("d" in keys) - ("a" in keys))
+    throttle = 500 + 300 * (held("r", "pageup") - held("f", "pagedown"))
+    yaw = 400 * (held("e") - held("q"))
     drone.sticks = (int(pitch), int(roll), int(throttle), int(yaw))
 
 
 # ---------------- figure ----------------
-fig = plt.figure(figsize=(15, 8.5))
+fig = plt.figure(figsize=(15, 9.2))
 fig.canvas.manager.set_window_title("GNSS-denied demo")
-gs = fig.add_gridspec(1, 2, width_ratios=[1.55, 1], wspace=0.05)
+gs = fig.add_gridspec(1, 2, width_ratios=[1.55, 1], wspace=0.05, bottom=0.17, top=0.92)
 ax = fig.add_subplot(gs[0])
 panel = fig.add_subplot(gs[1])
 panel.axis("off")
-fig.suptitle("DETECT → REMEMBER → RETURN   |   live PX4 drone, GPS can be jammed", fontsize=15, weight="bold")
+fig.suptitle("Live PX4 drone  |  GPS can be jammed  |  DETECT → NAVIGATE → LOCATE → SHARE → REROUTE",
+             fontsize=14, weight="bold")
+
+# Buttons (mouse) - same actions as the keys
+from matplotlib.widgets import Button  # noqa: E402
+
+BUTTONS = [  # (label, action, colour)
+    ("Take off (T)", "takeoff", "#dbe9ff"), ("Fly to B (B)", "b", "#dbe9ff"),
+    ("Home to START (H)", "home", "#dbe9ff"), ("Land (L)", "land", "#dbe9ff"),
+    ("JAM GPS on/off (G)", "jam", "#ffd6d6"), ("Motors off (X)", "disarm", "#ffe8c2"),
+    ("Clear track (C)", "clear", "#eeeeee"), ("Quit (Esc)", "quit", "#eeeeee"),
+]
+CAM_BUTTONS = [(f"Cam {k}: {CAMERA_VIEWS[k][0]}", k) for k in CAMERA_VIEWS]
+_buttons = []
+for i, (label, action, colour) in enumerate(BUTTONS):
+    b = Button(fig.add_axes((0.02 + i * 0.12, 0.075, 0.115, 0.045)), label, color=colour, hovercolor="#bcd4ff")
+    b.label.set_fontsize(9.5)
+    b.on_clicked(lambda _e, a=action: act(a))
+    _buttons.append(b)
+for i, (label, action) in enumerate(CAM_BUTTONS):
+    b = Button(fig.add_axes((0.02 + i * 0.192, 0.02, 0.185, 0.04)), label, color="#e9f5ec", hovercolor="#c6ebd0")
+    b.label.set_fontsize(9.5)
+    b.on_clicked(lambda _e, a=action: act(a))
+    _buttons.append(b)
 
 ax.set_xlim(*MAP_EAST); ax.set_ylim(*MAP_NORTH); ax.set_aspect("equal")
 ax.set_xlabel("East [m]"); ax.set_ylabel("North [m]"); ax.grid(alpha=0.25)
@@ -299,9 +414,9 @@ info_txt = panel.text(0.03, 0.79, "", transform=panel.transAxes, va="top", famil
 detect_txt = panel.text(0.03, 0.56, "", transform=panel.transAxes, va="top", family="monospace", fontsize=10.5)
 events_txt = panel.text(0.03, 0.40, "", transform=panel.transAxes, va="top", family="monospace", fontsize=8.5,
                         color="#333333")
-panel.text(0.03, 0.12, "T takeoff   B fly to B   H return home   L land   X motors off\n"
-                       "Arrows fly (N/S/W/E)   W/S up/down   A/D rotate\n"
-                       "G  JAM GPS on/off      C clear track   Esc quit",
+panel.text(0.03, 0.12, "W A S D / arrows  fly N W S E (map directions)\n"
+                       "R / F  up / down      Q / E  rotate\n"
+                       "1-5 camera views      click this window for keys",
            transform=panel.transAxes, va="top", family="monospace", fontsize=10, color="#1f3b73",
            bbox=dict(boxstyle="round", fc="#eef3fb", ec="#9db4dd"))
 
@@ -323,7 +438,15 @@ def update(_):
     if connected and not state["setup_done"]:
         drone.setup()
         drone.log("parameters set (demo setup)")
+        camera.set_view("2", yaw)
         state["setup_done"] = True
+    camera.tick(yaw)
+
+    # Home to START: land once we are there (PX4's own RTL would go to the last arming spot)
+    if state["homing"] and armed and math.hypot(n, e) < 2.0 and spd < 0.7:
+        state["homing"] = False
+        drone.log("> at START - landing")
+        drone.set_mode(4, 6)
 
     # Our monitor: GPS silent for longer than GPS_SILENT_LIMIT (and > 3 typical intervals)
     typical = sorted(dts)[len(dts) // 2] if dts else 0.2
@@ -381,7 +504,7 @@ def update(_):
                      f"  PX4 failsafe: … ({now - state['jam_t']:.0f} s)")
         if not gps_ok:
             lines.append("  PX4 cannot return home without GPS —")
-            lines.append("  that is what REMEMBER → RETURN fixes.")
+            lines.append("  -> terrain nav + swarm sharing fix this.")
     else:
         lines.append("  press G to jam the GPS")
     detect_txt.set_text("\n".join(lines))
