@@ -108,6 +108,11 @@ Evidence: commits in this repo, plots, flight logs in `logs/`.
 - **MagNav** (Guled): the Earth's magnetic map can't be jammed and works over the sea, where terrain matching goes blind (202 m → 38 m together).
 - **Pitch rules changed:** only the PPTX is judged, demos must be inside the slides → built a full 12-slide draft from all results for Guled to polish.
 
+### 17. Real terrain instead of made-up hills (Guled, `navigation/real_map/`)
+- Our biggest weak spot: "only simulated terrain". Guled downloaded the **real height map of Bråviken near Norrköping** (NASA SRTM) and re-ran 25 random missions.
+- With the swarm's radio link working: **25/25 within 50 m (~4 m)**. IMU alone: 0/25.
+- **Honest finding:** real ground is flatter than our simulated hills and partly water. If the enemy also jams the radio, terrain matching alone succeeds only 6/25; MagNav cuts the typical error 180 → 71 m (8/25). Not solved yet — now we know exactly where to work.
+
 ## Mentor feedback log
 | When | Who | What they said | What we changed |
 |---|---|---|---|

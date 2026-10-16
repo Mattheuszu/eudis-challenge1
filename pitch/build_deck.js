@@ -224,7 +224,7 @@ async function build() {
   stat(s, 0.6, b + 0.3, 1.9, 1.15, "1 974 m", "off: IMU only", C.accent3, 22);
   stat(s, 2.6, b + 0.3, 1.9, 1.15, "1 874 m", "off: camera in snow (0/8 landmarks)", C.accent3, 22);
   stat(s, 4.6, b + 0.3, 2.0, 1.15, "14.5 m", "off: terrain matching", C.accent2, 22);
-  caption(s, "Laser altimeter vs height map: the shape of the hills survives snow.", 0.6, b + 1.55, 6.0);
+  caption(s, "Laser altimeter vs height map: the shape of the hills survives snow. Re-tested on the REAL Bråviken height map (SRTM): backup slide.", 0.6, b + 1.55, 6.0, 0.6);
   s.addText("LOCATE  ·  every jammer gives itself away", { x: 6.85, y: 1.45, w: 5.9, h: 0.35, fontSize: 14, bold: true,
     color: C.accent1, margin: 0, isTextBox: true });
   b = picture(s, "navigation/jammer_hunt.png", 6.9, 1.95, 5.8, 2200 / 880, "Jammer localisation with two drones");
@@ -318,7 +318,7 @@ async function build() {
     line: { color: C.accent5, width: 0.75 }, objectName: "honest limits card" });
   s.addText([
     { text: "Honest limits", options: { bold: true, color: C.accent6, breakLine: true } },
-    { text: "Simulation only so far · jammer model is free-space · the swarm assumes its radio link survives · " +
+    { text: "Simulation so far (navigation re-tested on real Bråviken terrain) · jammer model is free-space · the swarm assumes its radio link survives · " +
       "very slow spoofs (< 0.1 m/s) are not caught", options: { color: C.background2 } },
   ], { x: 0.8, y: 5.55, w: 5.6, h: 0.95, fontSize: 13, margin: 0, valign: "top", isTextBox: true });
   s.addText("NEXT", { x: 7.0, y: 1.5, w: 5.7, h: 0.4, fontSize: 14, bold: true, color: C.accent1, charSpacing: 2, margin: 0,
@@ -392,6 +392,28 @@ async function build() {
     "And over the sea, where hills disappear, the Earth's magnetic map still works and can't be jammed. " +
     "(Limits: assumes the drones' own radio link survives; the magnetic map in the demo is fairly strong.)");
 
+
+  // BACKUP: REAL TERRAIN (Guled) ---------------------------------------------------
+  s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Backup" });
+  s.addText("Real terrain: 25 missions over Bråviken, Norrköping", { placeholder: "title" });
+  tag(s, "BACKUP");
+  b = picture(s, "navigation/real_map/real_map_test.png", 0.65, 1.5, 8.4, 2000 / 850, "Real-map test over Bråviken");
+  caption(s, "Built by Guled · navigation/real_map/ · heights real (NASA SRTM via AWS Terrain Tiles), magnetic map simulated",
+    0.6, b + 0.15, 8.5);
+  s.addText([
+    { text: "Honest finding: ", options: { bold: true, color: C.accent6 } },
+    { text: "real ground is flatter than our simulated hills, and ~21 % of each route is over water. " +
+      "With the drones' radio link jammed too, terrain matching often has nothing to recognise — MagNav halves the error, " +
+      "but it is not a full fix yet.", options: { color: C.background2 } },
+  ], { x: 0.6, y: b + 0.6, w: 8.5, h: 1.1, fontSize: 13, margin: 0, valign: "top", isTextBox: true });
+  stat(s, 9.45, 1.5, 3.3, 1.2, "25 / 25", "within 50 m, radio link working (~4 m typical)", C.accent2, 26);
+  stat(s, 9.45, 2.9, 3.3, 1.2, "0 / 25", "IMU only (~700 m typical)", C.accent3, 26);
+  stat(s, 9.45, 4.3, 3.3, 1.2, "180 → 71 m", "radio jammed too: terrain only vs + MagNav (typical)", C.accent6, 26);
+  stat(s, 9.45, 5.7, 3.3, 1.0, "6 → 8 / 25", "radio jammed too: success", C.accent6, 22);
+  s.addNotes("BACKUP — for Q&A ('is this only on made-up terrain?'). Guled: we re-ran navigation on REAL heights of Bråviken near Norrköping, " +
+    "25 random missions with a jammer on the target. With the edge drones' radio working: 25 of 25 within 50 m, about 4 m. " +
+    "If the enemy jams the radio too, the flat bay and plain are hard: 6 of 25 with terrain only; MagNav cuts the typical error " +
+    "from 180 to 71 m, 8 of 25. Honest: the magnetic map is simulated, heights are 20-30 m detail.");
   await pres.writeFile({ fileName: OUT });
   if (APPLY_THEME) {
     const { applyTheme } = require(APPLY_THEME);
