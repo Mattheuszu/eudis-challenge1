@@ -30,6 +30,17 @@
   img { width:100%; height:auto; border-radius:8px; border:1px solid var(--line); background:#fff; margin-top:8px; }
   .note { font-size:13px; color:var(--muted); margin-top:8px; }
   .file { font-family:ui-monospace, Consolas, monospace; font-size:13px; }
+  .tl { list-style:none; margin:10px 0 0; padding:0; border-left:2px solid var(--line); }
+  .tl li { position:relative; padding:0 0 12px 18px; }
+  .tl li::before { content:""; position:absolute; left:-6px; top:7px; width:10px; height:10px; border-radius:50%;
+                   background:var(--blue); }
+  .tl li.fix::before { background:var(--amber); }
+  .tl li.pivot::before { background:var(--red); }
+  .tl .day { font-weight:700; margin:6px 0 6px -2px; color:var(--muted); font-size:13px; letter-spacing:.04em; }
+  .tl .day::before { display:none; }
+  .tl b { font-weight:650; }
+  .legend { font-size:13px; color:var(--muted); }
+  .dot { display:inline-block; width:9px; height:9px; border-radius:50%; margin:0 4px 0 10px; vertical-align:middle; }
 </style>
 </head>
 <body>
@@ -40,6 +51,31 @@
   <p class="sub">The military already has detect + return home. Our step: one drone gets jammed, the whole swarm learns and still completes the mission.</p>
 </header>
 <main>
+
+<section>
+  <h2>How we got here</h2>
+  <div class="legend">Every step, including what failed. Full story: <span class="file">JOURNEY.md</span>
+    <span class="dot" style="background:var(--blue)"></span>built
+    <span class="dot" style="background:var(--amber)"></span>failed, then fixed
+    <span class="dot" style="background:var(--red)"></span>feedback changed our direction</div>
+  <ul class="tl">
+    <li class="day">THURSDAY</li>
+    <li class="pivot"><b>Talked to the Swedish Air Force first.</b> Jamming happens "really often", detection must be fast, snow hides landmarks, a real drone once came home on its own map.</li>
+    <li><b>Toy model:</b> a standard check misses slow spoofing; a check over a time window catches it.</li>
+    <li><b>Tested the real autopilot (PX4):</b> reacts in 5 s, lands blind, never flies home. Repeated it; only claims that reproduced.</li>
+    <li class="fix"><b>Optical-flow drone crashed</b> on plain ground: no texture, the same problem as snow. Fixed with a textured world.</li>
+    <li class="fix"><b>Detector on real flight data caught nothing</b> (we modelled the IMU 50× too noisy), then gave <b>25 % false alarms</b>. Measured the real IMU, retuned: 0.5 m/s spoof caught in 13 s, 2/50 false alarms.</li>
+    <li class="day">FRIDAY</li>
+    <li><b>Live demo:</b> arrow-key flight, GPS jam on one key. Our monitor 1 s vs PX4 5 s.</li>
+    <li><b>Guled: navigation in snow</b> (camera fails, terrain matching 14.5 m after 8.8 km) and <b>jammer hunter</b> (first version overconfident, fixed).</li>
+    <li class="pivot"><b>Briefing &amp; networking:</b> satellite maps, drone-to-drone links, 5G, pre-loaded maps → "never trust one source".</li>
+    <li class="pivot"><b>Military: "detect + return home already exists. Tell the others and still reach the target."</b> We changed the headline.</li>
+    <li class="fix"><b>Swarm reroute: drones looped</b> in and out of the zone. Fixed the danger map and the route planner: 24/24 reach the target vs 0/3 today.</li>
+    <li><b>Guled: AI mission brain</b> — Claude decides what, tested code flies; safety layer on every action.</li>
+    <li class="pivot"><b>Guled: "an enemy can fake the warnings"</b> → we attacked our own system.</li>
+    <li class="fix"><b>Two defences failed</b> (the liar won the vote), the third worked: <i>a warning is cheap to believe, an all-clear must be proven.</i> Liar caught 6/6, no honest drone rejected.</li>
+  </ul>
+</section>
 
 <section>
   <h2>1. Today's autopilot under GPS jamming (real PX4 simulator)</h2>

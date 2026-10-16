@@ -48,20 +48,16 @@ Key numbers for slides are in `CLAUDE.md` → Status and "Ideas collected Fri". 
 
 ## 3. Your tasks (visualisation, demo, slides)
 
-1. **Slides draft for Checkpoint 2 (Fri 13:00).** Structure: Problem (Air Force quotes) → Concept DETECT / REMEMBER / RETURN → Demo → Results (the plots above) → Team. Final upload Sat 12:30, pitch 5 min.
-2. **Nicer simulator world.** Default world is a grey plane (also breaks camera/optical flow). Try:
-   ```
-   PX4_GZ_WORLD=baylands make px4_sitl gz_x500_mono_cam_down
-   ```
-   Worlds list: `~/PX4-Autopilot/Tools/simulation/gz/worlds`.
-3. **Live demo dashboard (Python, matplotlib or similar)** to show next to Gazebo:
-   - top-down map: true path, what GPS says, where the drone thinks it is;
-   - big status: green `GPS TRUSTED` → red `SPOOFING DETECTED`;
-   - later: downward camera view + match with recorded "breadcrumbs".
-   Start by replaying `logs/18_23_09.ulg` (reuse the loading code from `log_spoof_detect.py`) as an animation; live connection to PX4 (MAVLink via `pymavlink`) can come later.
-4. **Record videos as backup**: "without protection" vs "with our system", side by side.
+Already done: nicer world (`sim/demo.sdf`), live demo dashboard (`demo_control.py`), your navigation / jammer hunter / AI brain (`navigation/`). Open the one-page overview `SHOWCASE.html` to see every result.
 
-Den is building the REMEMBER → RETURN logic (2D prototype) in parallel; don't edit `log_spoof_detect.py` / `spoof_detect.py` without telling him, make new files instead.
+1. **Pitch deck — the most important task. Upload by Sat 12:30, 5 minutes.** Suggested order:
+   Problem (Air Force quotes) → what today's autopilot does (`log_analysis.png`: 5 s, blind landing) → our pipeline DETECT → NAVIGATE → LOCATE → DECIDE → SHARE → REROUTE, one picture each → "we attacked our own system" (`swarm_attack.png`) → honest limits + future work (satellite maps, 5G, cooperative nav) → team (who built what).
+   Numbers must match `SHOWCASE.html`. Jammer hunter: say **~120 m typical**, not 71 m.
+2. **One real Claude run** of `navigation/ai_commander.py` (needs `ANTHROPIC_API_KEY`), so the AI slide shows real reasoning; save `ai_mission.png` + `ai_mission_log.txt`. Otherwise label the slide "rule-based mode".
+3. **Record backup videos** (Win+Alt+R): the live demo (`DEMO.md`) and `swarm_reroute.gif`.
+4. **Rehearse with a timer**: Den presents detection / swarm / attack, you present navigation / jammer hunter / AI brain.
+
+Ask Den before editing his scripts (`log_spoof_detect.py`, `swarm_reroute.py`, `swarm_attack.py`, `demo_control.py`); make new files instead.
 
 ## 3a. Your files are in the repo now
 `sim_long.py`, `jammer_hunt.py`, their plots and README are in `navigation/` (added by Den from your zip, credited to you). `ai_commander.py` and `gnss_free_nav.py` were added too (13:35). Still missing: the pitch deck — send it the same way, or push it yourself (below).

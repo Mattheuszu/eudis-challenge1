@@ -18,12 +18,17 @@ Context handoff for Claude Code. The user (Den) prefers Russian in chat; code an
 ## Challenge 1 (official text, summarised)
 Autonomous systems that navigate without GNSS using onboard sensors and real-time perception. Bonus: quantum sensors (accelerometers, gravimeters, quantum imaging) — can be *simulated* as a very-low-drift IMU.
 
-## Our concept: DETECT → REMEMBER → RETURN
-1. **DETECT** GPS jamming (signal lost / degraded) and spoofing (signal present but false), as fast as possible.
-2. **REMEMBER**: while GPS is trusted, the drone records its own map (downward camera snapshots + laser altitude + position) — "breadcrumbs".
-3. **RETURN**: after the alarm, navigate with INS + camera + laser, matching current view to its own recorded map, and fly home.
+## Our concept (updated Fri after military feedback): DETECT → NAVIGATE → LOCATE → DECIDE → SHARE → REROUTE
+The military already has detect + return home, so that is the foundation, not the headline.
+1. **DETECT** jamming (~1 s, live demo) and slow spoofing (~13 s, real flight data) — Den.
+2. **NAVIGATE** without GPS, even in snow: terrain matching, 14.5 m after 8.8 km — Guled.
+3. **LOCATE** the jammer from interference readings, ~120 m typical with 2 drones — Guled.
+4. **DECIDE**: AI mission brain (Claude + safe tools + safety layer) — Guled.
+5. **SHARE + REROUTE**: the swarm plans around the danger zone, 24/24 reach the target vs 0/3 today — Den.
+6. **Secured against fake reports** from a captured drone (liar caught 6/6) — Guled's question, Den built it.
 
-Pitch line: "When GPS is attacked, our drone detects it and flies home using a map it built itself — exactly what the Air Force told us worked in a real case."
+Pitch line: "One drone gets jammed — the whole swarm learns, and still completes the mission. And if the enemy fakes the warnings, physics exposes the liar."
+(Original Thu concept: DETECT → REMEMBER (own breadcrumb map) → RETURN home.)
 
 ## What the Swedish Air Force (Helicopter Wing) told us — use in pitch
 - GPS jamming/spoofing happens "really often" (can't give numbers; see news — e.g. Baltic GNSS interference).
@@ -104,7 +109,8 @@ shutdown                           # or Ctrl+C
 - **Finding:** `gz_x500_flow` in the default world failed: "Number of good matches: 2, desired: 20" → failsafe → Gazebo crashed. The default ground is untextured, so optical flow has nothing to track. This mirrors the snow problem — good pitch point. Fix: textured world, e.g. `PX4_GZ_WORLD=baylands make px4_sitl gz_x500_flow` (or `lawn`; list worlds in `Tools/simulation/gz/worlds`).
 - Common user pitfalls: pasting two commands on one line; running Linux commands in PowerShell or in `pxh>`; `wsl --shutdown` must run in PowerShell (from Ubuntu use `wsl.exe --shutdown`).
 
-## Status (Thu 15 Oct, ~20:20)
+## Status (updated Fri 16 Oct, afternoon)
+Everything below is done unless marked [ ]. One-page overview of all results: `SHOWCASE.html`; process story: `JOURNEY.md`.
 - [x] Python, WSL/Ubuntu, PX4 + Gazebo installed and working; x500 takes off.
 - [x] Interviews with Air Force done (see above).
 - [x] Test on x500: `failure gps off` vs `failure gps wrong` (log `logs/18_23_09.ulg`, plot `log_analysis.png`). Results:
@@ -120,9 +126,15 @@ shutdown                           # or Ctrl+C
 - [x] Live demo app tested end-to-end (Fri 09:30) on SITL: takeoff, fly to B, arrows, jam → our monitor 1.1–1.2 s vs PX4 failsafe 5.1 s; PX4 goes ALTITUDE (if pilot in Position mode) or AUTO_DESCEND (sub-mode 20, blind descent) when in auto; RTL impossible without GPS; GPS restored → RTL flies home and lands.
 - [ ] Spoofing injection live in SITL (MAVLink/uORB injector) instead of post-processing.
 - [x] Gazebo `baylands` world works (`PX4_GZ_WORLD=baylands make px4_sitl gz_x500`) — looks presentable. Occasional `vehicle_imu timestamp error` under load: fine for demo/video, use default world or `HEADLESS=1` for clean data logs.
-- [ ] **NEXT (Fri morning): REMEMBER → RETURN 2D prototype.** Base it on Guled's `gnss_free_nav.py` sent to Den Thu night (IMU-only vs IMU + 4 known checkpoints; not yet in repo — ask Den to drop it into the folder). Our run of it: bias 0.02 → miss 279 m IMU-only vs 22 m with checkpoints; bias 0.05 → drone drifts >25 m camera range, misses checkpoint 2, lost (513 m) → key insight: breadcrumbs must be dense relative to IMU drift (links to quantum-IMU bonus). Plan: outbound with GPS records own breadcrumbs every N m → spoof mid-flight caught by our detector → return home with IMU + own breadcrumbs via KF (not the `vel_error*0.2` hack); compare IMU-only / known landmarks / own breadcrumbs / snow (some matches fail). Keep Guled's plot style, new file, credit him. Then x500_mono_cam_down.
-- [ ] Optional: very-low-drift "quantum IMU" comparison (change ACC_BIAS) for the quantum-sensor bonus.
-- [ ] Slides: Problem (Air Force quotes) → Concept (Detect/Remember/Return) → Demo → Results (detection time vs false alarms, drift with/without backup) → Team. Upload by Sat 12:30.
+- [x] GPS-free navigation (Guled): `navigation/gnss_free_nav.py` (279 m → 22 m with checkpoints) and `navigation/sim_long.py` (8.8 km in snow: terrain matching 14.5 m). REMEMBER → RETURN with own breadcrumbs was NOT built separately — Guled's terrain matching covers the navigation part; breadcrumbs are shown in the live demo map.
+- [x] Quantum-IMU bonus: in `sim_long.py` (40× better accelerometer alone → 70 m after 8.8 km).
+- [x] Jammer hunter (Guled), AI mission brain (Guled, offline run done), swarm reroute (Den), fake-report attack + defences (Den, Guled's question). See Files.
+- [x] Results page `SHOWCASE.html`, process log `JOURNEY.md`, all on GitHub.
+- [ ] **Pitch deck** (Guled; not in repo yet). Upload by **Sat 12:30**, 5 min. Suggested order: Problem (Air Force quotes, Baltic jamming) → what today's autopilot does (5 s, blind landing) → our pipeline DETECT → NAVIGATE → LOCATE → DECIDE → SHARE → REROUTE with one picture each → fake-report attack ("we attacked our own system") → honest limits + future work (satellite maps, 5G, cooperative nav) → team (who built what). Numbers must match `SHOWCASE.html`; use jammer hunter ~120 m typical, not 71 m.
+- [ ] Record one REAL Claude run of `navigation/ai_commander.py` (needs ANTHROPIC_API_KEY, costs cents) so the slide shows real AI reasoning; otherwise label "rule-based mode". Optional fix: loop treats `max_tokens`/`pause_turn` as finished.
+- [ ] Record backup videos (Win+Alt+R): live demo (`DEMO.md`) jam → blind descent → RTL refused; `swarm_reroute.gif` already exists.
+- [ ] Rehearse the 5-minute pitch with a timer; Den presents detection / swarm / attack, Guled navigation / jammer hunter / AI brain.
+- [ ] Sat 9:00–12:00 live demo: laptop with `demo_control.py` + Gazebo `demo` world; ask mentors whether Terra lab (real drone + Vicon) is possible.
 
 ## Open questions for mentors / lab
 - Recorded flight data (IMU/GPS/camera) + Vicon ground truth available?
