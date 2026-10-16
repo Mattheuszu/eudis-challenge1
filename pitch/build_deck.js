@@ -35,6 +35,7 @@ const BG = HEX.dk1;
 const pres = new pptxgen();
 pres.layout = "LAYOUT_WIDE"; // 13.333 x 7.5 in
 pres.title = "GPS Under Attack - EUDIS Defence Hackathon 2026";
+pres.subject = "Pitch: GNSS-denied navigation, Challenge 1";
 pres.author = "Den and Guled";
 pres.theme = { headFontFace: THEME.headFontFace, bodyFontFace: THEME.bodyFontFace };
 const C = pres.SchemeColor;
@@ -125,8 +126,10 @@ async function build() {
              { text: "Guled", options: { bold: true, color: C.background1 } },
              { text: "  computer engineering", options: { color: C.accent5 } }],
     { x: 0.7, y: 5.6, w: 6.2, h: 0.4, fontSize: 15, margin: 0, isTextBox: true });
-  picture(s, "gazebo_base.png", 7.35, 2.05, 5.4, 1289 / 609, "Gazebo battlefield with jammer dome and target");
-  caption(s, "Our live simulation: real PX4 autopilots, an enemy GPS jammer (red dome) and the target", 7.35, 4.75, 5.4, 0.5);
+  const tb = picture(s, "media/satellite_mission.gif", 7.25, 1.55, 5.5, 1.65, "Animated swarm mission on a satellite map");
+  caption(s, "Our swarm mission on a real satellite map (animated). Illustrative location: Gotland, Baltic Sea.", 7.25, tb + 0.15, 5.5, 0.5);
+  s.addText("Satellite: Sentinel-2 cloudless 2016 © EOX IT Services GmbH (CC BY 4.0), contains modified Copernicus Sentinel data",
+    { x: 7.25, y: tb + 0.6, w: 5.5, h: 0.4, fontSize: 8, color: C.accent5, margin: 0, isTextBox: true, objectName: "imagery credit" });
   s.addNotes("0:00–0:15  Hi, we are Den and Guled. GPS is the single point of failure of today's drones. " +
     "Our idea in one sentence: when one drone gets jammed, the whole swarm learns from it and still completes the mission.");
 
@@ -251,7 +254,7 @@ async function build() {
   s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Solution" });
   s.addText("One scout gets jammed — the swarm gets through", { placeholder: "title" });
   tag(s, "INNOVATION");
-  b = picture(s, "radar/radar_swarm_end.png", 0.65, 1.5, 8.0, 1440 / 880, "Jamming radar: swarm reroute replay");
+  b = picture(s, "radar/radar_replay.gif", 0.65, 1.5, 8.0, 960 / 587, "Jamming radar: animated swarm reroute replay");
   caption(s, "Flight-radar replay of our swarm simulation — drone expert Isabella's idea, built by Guled", 0.6, b + 0.15, 8.1);
   stat(s, 9.2, 1.5, 3.55, 1.05, "0 / 3", "reach the target today", C.accent3, 24);
   stat(s, 9.2, 2.7, 3.55, 1.05, "24 / 24", "with our swarm (8 random runs)", C.accent2, 24);
@@ -287,20 +290,18 @@ async function build() {
   s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Proof" });
   s.addText("Live: 3 real PX4 autopilots fly the mission in Gazebo", { placeholder: "title" });
   tag(s, "PROGRESS");
-  b = picture(s, "gazebo_base.png", 0.65, 1.55, 7.35, 1289 / 609, "Gazebo: base, battlefield, jammer and target");
-  caption(s, "Forward base with operators · battlefield · enemy jammer (red dome) · target facility", 0.6, b + 0.15, 7.4);
-  picture(s, "mission_screenshot.png", 8.45, 1.55, 4.25, 1085 / 658, "Mission app after a live run");
-  stat(s, 0.6, 5.55, 2.35, 1.25, "1 / 3", "drones ever jammed (the scout)", C.accent6, 24);
-  stat(s, 3.1, 5.55, 2.35, 1.25, "3 / 3", "on station at the target", C.accent2, 24);
-  stat(s, 5.6, 5.55, 2.4, 1.25, "33–38 m", "stand-off, never inside the building", C.accent4, 24);
-  s.addText([
-    { text: "Scout flies into the jammer → alarm → backs out blind on its own breadcrumbs → warns the swarm → others fly around.",
-      options: { color: C.background2 } },
-  ], { x: 8.4, y: 4.35, w: 4.35, h: 1.1, fontSize: 13, margin: 0, valign: "top", isTextBox: true });
-  caption(s, "7 live test runs to get here — every failure is in our process log.", 8.4, 5.65, 4.35, 0.6);
+  b = picture(s, "media/gazebo_mission.gif", 0.65, 1.5, 5.35, 640 / 434, "Animated time-lapse of the live PX4 mission in Gazebo");
+  caption(s, "Recorded live from Gazebo (time-lapse). Sharper video: media/gazebo_mission.mp4", 0.6, b + 0.12, 5.85);
+  b = picture(s, "mission_screenshot.png", 6.45, 1.5, 6.25, 1085 / 658, "Mission app after a live run");
+  caption(s, "Our mission app: every drone's position, GPS state and the shared danger zone", 6.4, b + 0.12, 6.35);
+  stat(s, 0.6, 5.65, 3.0, 1.15, "1 / 3", "drones ever jammed (the scout)", C.accent6, 24);
+  stat(s, 3.75, 5.65, 3.0, 1.15, "3 / 3", "on station at the target", C.accent2, 24);
+  stat(s, 6.85, 5.65, 2.85, 1.15, "33–38 m", "stand-off, never inside the building", C.accent4, 24);
+  stat(s, 9.85, 5.65, 2.9, 1.15, "2 / 2", "full live runs succeeded after fixes", C.accent2, 24);
   s.addNotes("3:00–3:30  Not just a Python model: three real PX4 autopilots in Gazebo, at a military base with a jammer on the battlefield. " +
-    "The scout gets jammed, backs out blind on its own breadcrumbs and warns the others; all three end on station next to the target. " +
-    "(Replace the left picture with the screen recording of the mission before uploading.)");
+    "The scout gets jammed, backs out blind on its own breadcrumbs and warns the others; all three end on station next to the target, " +
+    "never inside the building. It took seven test runs to get here — every failure is in our process log. " +
+    "(The animation plays automatically; media/gazebo_mission.mp4 is the sharper video if you prefer it.)");
 
   // 9. ATTACK ---------------------------------------------------------------
   s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Proof" });
