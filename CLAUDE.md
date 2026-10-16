@@ -1,15 +1,14 @@
 # EUDIS Defence Hackathon 2026 — Challenge 1 (GNSS-denied navigation)
 
-> **NEW SESSION? START HERE (written Fri 16 Oct, ~21:00).**
-> - It is the last night of a 48 h hackathon. **Pitch deck upload: Sat 17 Oct 12:30 (PPTX, 5 min, only the slides are judged).** Pitch Sat 13:30–15:30.
-> - The deck is DONE as a draft: `pitch/GPS_Under_Attack_pitch.pptx` (12 slides, speaker notes, animated GIFs on slides 1/7/9). Rebuild with `node pitch/build_deck.js` (see Files). Remaining: Den/Guled check it in PowerPoint (F5), polish, rehearse with a timer.
-> - One-page overview of every result: `SHOWCASE_standalone.html`. Process story for the jury: `JOURNEY.md`. Live demo how-to: `DEMO.md`.
-> - Den is a beginner with terminals: always say whether a command goes in **PowerShell** (`PS C:\...>`, our `py ...` apps) or **Ubuntu/WSL** (`den@mattheus...$`, simulator) or **pxh>** (PX4 console). One command per code block.
-> - Simulator: `bash /mnt/c/Users/den/hackathon/challenge1/sim/start_swarm.sh` (3 drones, base world) or `cd ~/PX4-Autopilot && PX4_GZ_WORLD=demo make px4_sitl gz_x500` (1 drone). "PX4 server already running" = an old sim is up → `bash /mnt/c/Users/den/hackathon/challenge1/sim/stop_swarm.sh`.
-> - Git: if the last commits aren't on GitHub yet (venue Wi-Fi broke HTTPS with a certificate error Fri ~20:45), run `git push` from a different network.
-> - Den's usage budget is nearly used up: keep answers short, avoid big screenshots, don't re-run long simulations unless asked.
+> **NEW SESSION? START HERE (updated Fri 16 Oct, late night).**
+> - Last night of the hackathon. **Upload PPTX by Sat 17 Oct 12:30** (5 min pitch, only the slides are judged). Pitch Sat 13:30–15:30. Live demos Sat 9:00–12:00.
+> - **Deck is FINAL unless rehearsal shows a problem:** `pitch/GPS_Under_Attack_pitch.pptx` (13 slides, rebuilt from `node pitch/build_deck.js`; PDF backup `pitch/GPS_Under_Attack_pitch.pdf`). Order: title · problem · military pivot · detect · navigate+locate · AI brain · swarm reroute · live PX4 · attack · real terrain (Bråviken) · target inside zone · progress + adoption · team.
+> - Speaker notes = script with ONE hero number per slide, ~470 words (~3:40), DEN/GULED marked. Number colours fixed (green ours, red today, amber limit, blue fact) + colour key. Q&A cheat sheet: `pitch/QA.md`.
+> - Decided: stay on Challenge 1 only (no Challenge 2 mention). If PowerPoint has the deck open, the build fails with EBUSY → close it, or set env PPTX_OUT to another path.
+> - Saturday morning TODO: rehearse 3–4× with a timer, read QA.md, optional real Claude run of `navigation/ai_commander.py` (API key), get one mentor quote at the demo, upload by 12:30. Delete stale `pitch/GPS_Under_Attack_pitch_v2.pptx`.
+> - Den: chat in English now. Beginner with terminals: say PowerShell vs Ubuntu/WSL vs pxh>, one command per block. Keep answers short.
 
-Context handoff for Claude Code. The user (Den) prefers Russian in chat; code and comments in English.
+Context handoff for Claude Code. The user (Den) now prefers English in chat; code and comments in English.
 
 ## Event
 - EUDIS Defence Hackathon, Linköping, Sweden. Venue: Zenit (Linköping Science Park / LiU). 48 h, Thu 15 – Sat 17 Oct 2026.
