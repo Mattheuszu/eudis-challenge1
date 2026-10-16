@@ -38,7 +38,16 @@ pres.title = "GPS Under Attack - EUDIS Defence Hackathon 2026";
 pres.subject = "Pitch: GNSS-denied navigation, Challenge 1";
 pres.author = "Den and Guled";
 pres.theme = { headFontFace: THEME.headFontFace, bodyFontFace: THEME.bodyFontFace };
-const C = pres.SchemeColor;
+// Fixed hex colours (scheme colours fell back to the default Office theme: green showed orange, red showed grey)
+const C = {
+  background1: "FFFFFF", background2: "E8EDF2", text2: "1E3246",
+  accent1: "F26B1D", // orange: our brand / headings
+  accent2: "34C77B", // green: OUR result
+  accent3: "FF5A5F", // red: today / failure
+  accent4: "5AB4F0", // blue: neutral fact
+  accent5: "93A1B3", // grey: small text
+  accent6: "F5C451", // amber: partial / honest limit
+};
 const W = 13.333;
 
 // ---------------- icons ----------------
@@ -66,17 +75,27 @@ pres.defineSlideMaster({
   objects: [
     { placeholder: { options: { name: "title", type: "title", x: 0.6, y: 0.38, w: 10.0, h: 0.85, fontSize: 28, bold: true,
                                 color: C.background1, valign: "middle", align: "left", margin: 0 }, text: "" } },
-    { text: { text: FOOTER, options: { x: 0.6, y: 7.05, w: 10.5, h: 0.3, fontSize: 10, color: C.accent5, margin: 0 } } },
+    { text: { text: FOOTER, options: { x: 0.6, y: 7.05, w: 7.2, h: 0.3, fontSize: 10, color: C.accent5, margin: 0 } } },
   ],
   slideNumber: { x: 12.3, y: 7.05, w: 0.45, h: 0.3, fontSize: 10, color: C.accent5, align: "right" },
 });
 
 // ---------------- helpers ----------------
+function colourKey(slide) { // what the number colours mean, bottom right of every content slide
+  slide.addText([
+    { text: "● ", options: { color: C.accent2 } }, { text: "our result   ", options: { color: C.accent5 } },
+    { text: "● ", options: { color: C.accent3 } }, { text: "today   ", options: { color: C.accent5 } },
+    { text: "● ", options: { color: C.accent6 } }, { text: "partial / limit   ", options: { color: C.accent5 } },
+    { text: "● ", options: { color: C.accent4 } }, { text: "fact", options: { color: C.accent5 } }],
+    { x: 7.9, y: 7.05, w: 4.3, h: 0.3, fontSize: 10, align: "right", margin: 0, isTextBox: true, objectName: "colour key" });
+}
+
 function tag(slide, text) { // criterion pill, top right: the deck's motif
   slide.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 10.85, y: 0.55, w: 1.9, h: 0.42, rectRadius: 0.21,
     fill: { color: C.text2 }, line: { color: C.accent1, width: 1.25 }, objectName: "criterion tag" });
   slide.addText(text, { x: 10.85, y: 0.55, w: 1.9, h: 0.42, fontSize: 11, bold: true, color: C.accent1,
     align: "center", valign: "middle", charSpacing: 2, margin: 0, isTextBox: true, objectName: "criterion tag text" });
+  colourKey(slide);
 }
 
 function picture(slide, file, x, y, w, ratio, name) { // white rounded card + image; returns bottom y
@@ -250,7 +269,7 @@ async function build() {
   stat(s, 9.2, 1.5, 3.55, 1.05, "0 / 3", "reach the target today", C.accent3, 24);
   stat(s, 9.2, 2.7, 3.55, 1.05, "24 / 24", "with our swarm (8 random runs)", C.accent2, 24);
   stat(s, 9.2, 3.9, 3.55, 1.05, "16 s vs 68 s", "without GPS: swarm vs each alone", C.accent2, 24);
-  stat(s, 9.2, 5.1, 3.55, 1.05, "−16 %", "mission time", C.accent4, 24);
+  stat(s, 9.2, 5.1, 3.55, 1.05, "−16 %", "mission time", C.accent2, 24);
   s.addNotes("2:00–2:25  DEN: This is the core. Today, all three drones fly into the jammer and are lost. In our swarm the first drone is a scout: it gets jammed, backs out, and shares what it measured. The others fly around. 24 out of 24 reach the target.");
 
   // 8. LIVE PX4 -------------------------------------------------------------
@@ -265,7 +284,7 @@ async function build() {
   stat(s, 0.6, 5.65, 3.0, 1.15, "1 / 3", "drones ever jammed (the scout)", C.accent6, 24);
   stat(s, 3.75, 5.65, 3.0, 1.15, "3 / 3", "on station at the target", C.accent2, 24);
   stat(s, 6.85, 5.65, 2.85, 1.15, "33–38 m", "stand-off, never inside the building", C.accent4, 24);
-  stat(s, 9.85, 5.65, 2.9, 1.15, "7", "live test runs to get it working", C.accent6, 24);
+  stat(s, 9.85, 5.65, 2.9, 1.15, "7", "live test runs to get it working", C.accent4, 24);
   s.addNotes("2:25–2:45  DEN: And it is not just a model. Three real PX4 autopilots fly this mission live in a simulator. The scout gets jammed, the others go around — 3 of 3 end on station.");
 
   // 9. ATTACK ---------------------------------------------------------------
@@ -324,9 +343,9 @@ async function build() {
   s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Progress and team" });
   s.addText("48 hours of progress — and what's next", { placeholder: "title" });
   tag(s, "PROGRESS");
-  stat(s, 0.6, 1.5, 1.9, 1.05, "4", "expert inputs", C.accent1, 26);
-  stat(s, 2.65, 1.5, 1.9, 1.05, "17", "logged iterations", C.accent1, 26);
-  stat(s, 4.7, 1.5, 1.9, 1.05, "31", "commits on GitHub", C.accent1, 26);
+  stat(s, 0.6, 1.5, 1.9, 1.05, "4", "expert inputs", C.accent4, 26);
+  stat(s, 2.65, 1.5, 1.9, 1.05, "17", "logged iterations", C.accent4, 26);
+  stat(s, 4.7, 1.5, 1.9, 1.05, "31", "commits on GitHub", C.accent4, 26);
   s.addText("WHY IT GETS ADOPTED", { x: 0.6, y: 2.75, w: 6.0, h: 0.35, fontSize: 14, bold: true, color: C.accent1,
     charSpacing: 2, margin: 0, isTextBox: true });
   const adopt = [
