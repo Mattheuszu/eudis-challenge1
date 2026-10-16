@@ -181,6 +181,19 @@
 </section>
 
 <section>
+  <h2>7b. Live in the simulator: 3 PX4 drones at a military base</h2>
+  <div class="who">Built by <b>Den</b> · <span class="file">mission_demo.py</span>, <span class="file">sim/base.sdf</span> · run-sheet <span class="file">DEMO.md</span> (part A)</div>
+  <div class="nums">
+    <div class="num bad"><div class="v">1 / 3</div><div class="l">drones ever jammed (the scout)</div></div>
+    <div class="num good"><div class="v">3 / 3</div><div class="l">on station at the target</div></div>
+    <div class="num good"><div class="v">33–38 m</div><div class="l">stand-off, never touching the building</div></div>
+  </div>
+  <img src="gazebo_base.png" alt="Gazebo: jammer dome and target facility">
+  <img src="mission_screenshot.png" alt="Mission app after a live run">
+  <p class="note">Real PX4 autopilots in Gazebo. The scout flies into the jammer, backs out blind on its own breadcrumbs and warns the others; they fly around the danger zone. Jamming is simulated by switching GPS off inside the red dome.</p>
+</section>
+
+<section>
   <h2>8. We attacked our own system: fake reports from a captured drone</h2>
   <div class="who">Question by <b>Guled</b>, built by <b>Den</b> · <span class="file">swarm_attack.py</span></div>
   <div class="nums">

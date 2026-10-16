@@ -1,0 +1,184 @@
+<?xml version="1.0" ?>
+<!--
+  "base" world: forward operating base at START, battlefield in between, enemy facility = target.
+  Gazebo frame is ENU: x = East, y = North (metres). PX4 local frame is NED.
+  Install: bash sim/install_world.sh   Run: bash sim/start_swarm.sh  (3 drones)
+           or: cd ~/PX4-Autopilot && PX4_GZ_WORLD=base make px4_sitl gz_x500  (1 drone)
+  Keep TARGET / JAMMER / pads in sync with demo_control.py (SCENE settings).
+-->
+<sdf version='1.9'>
+  <world name='base'>
+    <physics type="ode">
+      <max_step_size>0.004</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+      <real_time_update_rate>250</real_time_update_rate>
+    </physics>
+    <gravity>0 0 -9.8</gravity>
+    <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
+    <atmosphere type='adiabatic'/>
+    <scene>
+      <ambient>0.75 0.75 0.75 1</ambient>
+      <background>0.62 0.7 0.78 1</background>
+      <grid>false</grid>
+      <sky><clouds>true</clouds></sky>
+      <shadows>1</shadows>
+    </scene>
+    <light name='sunUTC' type='directional'>
+      <pose>0 0 500 0 -0 0</pose>
+      <cast_shadows>true</cast_shadows>
+      <intensity>1</intensity>
+      <direction>0.3 0.5 -0.8</direction>
+      <diffuse>0.95 0.92 0.85 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation><range>2000</range><linear>0</linear><constant>1</constant><quadratic>0</quadratic></attenuation>
+    </light>
+
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/baylands</uri>
+      <name>park</name>
+      <pose>205 155 -1 0 0 0</pose>
+    </include>
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Coast Water</uri>
+      <pose>0 0 -2 0 0 0<relative_to>park</relative_to></pose>
+    </include>
+
+    <!-- ================= FORWARD OPERATING BASE (around START) ================= -->
+    <!-- launch pads for the three drones (drone spawn points: 0,0  0,6  0,-6) -->
+    <include><uri>model://helipad</uri><name>pad_1</name><pose>0 0 0.03 0 0 0</pose></include>
+    <include><uri>model://helipad</uri><name>pad_2</name><pose>0 6 0.03 0 0 0</pose></include>
+    <include><uri>model://helipad</uri><name>pad_3</name><pose>0 -6 0.03 0 0 0</pose></include>
+
+    <!-- operators' ground station: tent with tables and chairs, antenna, people watching the drones -->
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/ground_station</uri>
+      <name>ground_station</name>
+      <pose>-11 2 0 0 0 -1.5708</pose>
+    </include>
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/antenna</uri>
+      <name>gs_antenna</name>
+      <pose>-15 8 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Standing person</uri>
+      <name>operator_1</name>
+      <pose>-5 3 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Casual female</uri>
+      <name>operator_2</name>
+      <pose>-5.5 -0.5 0 0 0 0.3</pose>
+    </include>
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Standing person</uri>
+      <name>operator_3</name>
+      <pose>-6 -4 0 0 0 0.5</pose>
+    </include>
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/tent</uri>
+      <name>tent_1</name>
+      <pose>-12 -9 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Radio tower</uri>
+      <name>radio_tower</name>
+      <pose>-45 35 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Pickup</uri>
+      <name>base_pickup</name>
+      <pose>-7 -15 0 0 0 0.2</pose>
+    </include>
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/TruckBox</uri>
+      <name>base_truck</name>
+      <pose>-16 -18 0 0 0 1.4</pose>
+    </include>
+    <include><uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Gazebo flag</uri><name>base_flag</name><pose>-3 9 0 0 0 0</pose></include>
+    <!-- base perimeter: concrete barriers facing the battlefield, gap for the drones -->
+    <include><uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Jersey Barrier</uri><name>wall_1</name><pose>10 -14 0 0 0 1.5708</pose></include>
+    <include><uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Jersey Barrier</uri><name>wall_2</name><pose>10 -9 0 0 0 1.5708</pose></include>
+    <include><uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Jersey Barrier</uri><name>wall_3</name><pose>10 10 0 0 0 1.5708</pose></include>
+    <include><uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Jersey Barrier</uri><name>wall_4</name><pose>10 15 0 0 0 1.5708</pose></include>
+    <include><uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Large Crate</uri><name>supply_1</name><pose>-8 9 0 0 0 0.3</pose><static>true</static></include>
+
+    <!-- ================= BATTLEFIELD ================= -->
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Collapsed House</uri>
+      <name>ruin_house</name>
+      <pose>30 -10 0 0 0 0.6</pose>
+    </include>
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Collapsed police station</uri>
+      <name>ruin_police</name>
+      <pose>25 60 0 0 0 -0.4</pose>
+    </include>
+    <include><uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Jersey Barrier</uri><name>field_block_1</name><pose>52 18 0 0 0 0.9</pose></include>
+    <include><uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Jersey Barrier</uri><name>field_block_2</name><pose>20 30 0 0 0 0.2</pose></include>
+    <include><uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Large Crate</uri><name>field_crate_1</name><pose>58 36 0 0 0 0.7</pose><static>true</static></include>
+    <include><uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Large Crate</uri><name>field_crate_2</name><pose>18 12 0 0 0 1.1</pose><static>true</static></include>
+
+    <!-- enemy GPS jammer: truck + antenna, translucent red dome (radius 20 m) = where GPS dies (visual only, for the audience) -->
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/TruckBox</uri>
+      <name>jammer_truck</name>
+      <pose>32 24 0 0 0 0.8</pose>
+    </include>
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/antenna</uri>
+      <name>jammer_antenna</name>
+      <pose>35 21 0 0 0 0</pose>
+    </include>
+    <model name='jammer_zone'>
+      <static>true</static>
+      <pose>32 24 0 0 0 0</pose>
+      <link name='link'>
+        <visual name='dome'>
+          <geometry><sphere><radius>20</radius></sphere></geometry>
+          <transparency>0.82</transparency>
+          <cast_shadows>false</cast_shadows>
+          <material><diffuse>1 0.1 0.05 1</diffuse><ambient>1 0.1 0.05 1</ambient><emissive>0.4 0.02 0.0 1</emissive></material>
+        </visual>
+        <visual name='ring'>
+          <pose>0 0 0.05 0 0 0</pose>
+          <geometry><cylinder><radius>20</radius><length>0.08</length></cylinder></geometry>
+          <transparency>0.6</transparency>
+          <material><diffuse>1 0.1 0.05 1</diffuse><ambient>1 0.1 0.05 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ================= TARGET: enemy facility ================= -->
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Collapsed industrial building</uri>
+      <name>target_facility</name>
+      <pose>80 60 0 0 0 0.3</pose>
+    </include>
+    <model name='target_marker'>
+      <static>true</static>
+      <pose>80 60 0 0 0 0</pose>
+      <link name='link'>
+        <visual name='ring'>
+          <pose>0 0 0.06 0 0 0</pose>
+          <geometry><cylinder><radius>22</radius><length>0.1</length></cylinder></geometry>
+          <transparency>0.55</transparency>
+          <material><diffuse>1 0.75 0 1</diffuse><ambient>1 0.75 0 1</ambient><emissive>0.5 0.35 0 1</emissive></material>
+        </visual>
+        <visual name='beacon'>
+          <pose>-24 -20 9 0 0 0</pose>
+          <geometry><cylinder><radius>0.25</radius><length>18</length></cylinder></geometry>
+          <material><diffuse>1 0.75 0 1</diffuse><ambient>1 0.75 0 1</ambient><emissive>0.6 0.4 0 1</emissive></material>
+        </visual>
+      </link>
+    </model>
+
+    <spherical_coordinates>
+      <surface_model>EARTH_WGS84</surface_model>
+      <world_frame_orientation>ENU</world_frame_orientation>
+      <latitude_deg>37.412173071650805</latitude_deg>
+      <longitude_deg>-121.998878727967</longitude_deg>
+      <elevation>38</elevation>
+    </spherical_coordinates>
+  </world>
+</sdf>

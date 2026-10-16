@@ -96,6 +96,12 @@ Evidence: commits in this repo, plots, flight logs in `logs/`.
 - **Quit only worked with keyboard focus:** added mouse buttons for every action.
 - Added **camera views** in Gazebo (chase behind the drone, close, top-down, side, overview) so the jury sees the flight like a drone feed.
 
+### 15. The whole idea, live: 3 real PX4 drones at a military base (`mission_demo.py`)
+- Den asked for a realistic scene: a forward operating base with operators, a battlefield, a target object, and extra drones. Built it in Gazebo: base, ruins, an enemy jammer truck with a red "GPS dies here" dome, and a target facility.
+- Mission: three drones fly to observe the target. The scout flies into the jammer, **our monitor raises the alarm, the scout backs out blind along its own breadcrumbs and warns the others**; the other two fly around and never lose GPS. **All three end on station 33–38 m from the target, never inside the building.**
+- It took 7 live test runs. What broke and how we fixed it: false GPS alarms on the ground with 3 drones (adaptive threshold), PX4 refused early takeoffs (retry), Windows UDP quirk, a route that went straight back into the jammer when the target point sat inside the cautious danger circle, drones overshooting turns (bigger margin), drone 2 too close behind the scout (longer launch gap), and two overlapping danger zones making drones loop (merge them, take the shorter way round).
+- Honest numbers: with 3 drones the laptop is busy, so our monitor needs ~3–4 s (1 s with one drone).
+
 ## Mentor feedback log
 | When | Who | What they said | What we changed |
 |---|---|---|---|
