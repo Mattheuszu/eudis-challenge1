@@ -44,6 +44,8 @@ Evidence: commits in this repo, plots, flight logs in `logs/`.
 - Another participant: 5G / cell towers as an extra position source.
 - → Combined into one message: **multi-source trust check**. Never trust one source; cross-check GPS against IMU, own map, satellite map, other drones, 5G.
 
+- Another participant: companies already sell pre-loaded maps for drones (landmark matching). → Confirms map matching is real and used; sharpened our positioning: **trust layer + fresh own map**, complementary to pre-loaded maps (which can be outdated or snow-covered).
+
 ### 8. Teammate's GNSS-free navigation sim
 - Teammate built a sim: IMU-only vs IMU + known checkpoints (279 m → 22 m miss).
 - **Finding from it:** with a slightly worse IMU the drone drifts further than the camera can see, misses a checkpoint and is lost. → Breadcrumbs must be **dense relative to IMU drift**; a better (quantum) IMU allows sparser maps.
