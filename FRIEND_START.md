@@ -58,6 +58,25 @@ Key numbers for slides are in `CLAUDE.md` → Status.
 
 Den is building the REMEMBER → RETURN logic (2D prototype) in parallel; don't edit `log_spoof_detect.py` / `spoof_detect.py` without telling him, make new files instead.
 
+## 3b. Put your work into the shared repo (do this now)
+
+Your `gnss_free_nav.py`, `sim_long.py`, `jammer_hunt.py`, their plots/GIF and the pitch deck should be in the repo **under your name**: the commit history is proof of teamwork (20 % of the score), and Den's Claude can then check that the slide numbers match the results.
+
+1. Accept the GitHub invite (email from GitHub, repo `Mattheuszu/eudis-challenge1`).
+2. Clone it next to your current folder, copy your files in, then:
+   ```
+   git config user.name "<your name>"
+   git config user.email "<your github email>"
+   git pull
+   git add gnss_free_nav.py sim_long.py jammer_hunt.py jammer_hunt.png <deck file>
+   git commit -m "Add GNSS-free navigation sim, jammer hunter and pitch deck"
+   git push
+   ```
+   (The GIF can be large; skip it if it is over ~20 MB.)
+3. From then on: `git pull` before you start, `git push` after each finished step.
+
+Pitch numbers to keep consistent with Den's results: jamming detected by our monitor in ~1 s vs PX4 ~5 s; slow spoof 0.5 m/s caught in ~13 s, PX4-style check misses it; jammer hunter **~120 m typical (10 runs)** rather than the best run 71 m.
+
 ## 4. Prompt to paste into your Claude Code
 
 > Read CLAUDE.md and FRIEND_START.md in this folder. I'm Den's teammate, I own visualisation, the demo dashboard and slides. First regenerate the three plots to check my setup, then help me build a demo dashboard that replays logs/18_23_09.ulg as an animation with a top-down map and a GPS TRUSTED / SPOOFING DETECTED status. Explain things simply, I'm a beginner.

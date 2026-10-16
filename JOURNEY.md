@@ -57,6 +57,13 @@ Evidence: commits in this repo, plots, flight logs in `logs/`.
 - Breadcrumbs are already recorded and drawn on the map while GPS is trusted → the visual bridge to REMEMBER → RETURN.
 - Problem solved on the way: long PX4 status messages arrived split into 50-char pieces → glued them back.
 
+### 10. Jammer hunter — the drones become sensors (teammate)
+- Idea: GPS receivers measure interference; closer to the jammer = louder. Two drones without GPS (positions from terrain navigation) log it and locate the jammer.
+- **First version was overconfident**: it claimed certainty but was often wrong. Fixed the measurement model; now the real jammer is inside the "95 % sure" area in 9–10 of 10 runs.
+- One drone: ~300 m typical, sometimes picks the mirror spot on the other side of its route (2.3 km off). **Two drones: ~120 m typical, worst 224 m.**
+- Checked the real basis: PX4 GPS data already has jamming-indicator / noise / AGC fields (real chips fill them; the simulator leaves them at 0).
+- → Concept extended: DETECT → REMEMBER → RETURN → **REPORT**.
+
 ## Mentor feedback log
 | When | Who | What they said | What we changed |
 |---|---|---|---|
