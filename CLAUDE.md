@@ -6,7 +6,8 @@ Context handoff for Claude Code. The user (Den) prefers Russian in chat; code an
 - EUDIS Defence Hackathon, Linköping, Sweden. Venue: Zenit (Linköping Science Park / LiU). 48 h, Thu 15 – Sat 17 Oct 2026.
 - **Deadline: upload pitch presentation Sat 17 Oct 12:30.** Pitch = 5 min, Sat 13:30–15:30. Live demos Sat 9:00–12:00 for jury/mentors (Terra lab or outdoors).
 - Fri 16 Oct: mentor session 1 at 9:45–12:00, Checkpoint 2 at 13:00, mentor session 2 at 15:30–17:00, dinner at Air Force Museum from 17:00.
-- Jury criteria: team, progress made during the hackathon, innovativeness, relevance to the challenge.
+- **Jury criteria (official weights, Fri briefing):** 30 % process — what we did and how we shared it with mentors; 20 % teamwork; 25 % relevance to the challenge; 25 % would the company actually use the idea.
+  - Implications: show iterations incl. failures and fixes (`JOURNEY.md`, git history), visit mentors with concrete plots and record their feedback, make the friend's part visible (dashboard, slides, his nav sim), keep the solution practical/cheap (works on existing PX4 drones, software-only).
 - Prizes: 1st €5,000 + EUDIS mentorship, 2nd €3,000, 3rd €2,000.
 - Terra lab (LiU): 10×10×5 m indoor flight space with Vicon tracking, 3× Holybro drones (Pixhawk 6C, PX4), XSens MTi-G-700 IMU, Jetson Orin NX, 2× DJI M300 (hardware-in-the-loop only).
 
@@ -33,6 +34,13 @@ Pitch line: "When GPS is attacked, our drone detects it and flies home using a m
 - Snow problem: objects/landmarks hidden under snow → pre-made maps don't match. Terrain shape (height profile) survives snow; own fresh map also works.
 - Real case: a drone lost GPS, **built a map of the ground by itself, and used it to come back**.
 
+## Ideas collected Fri 16 Oct (briefing / networking) — for "Future work" slide, not to build now
+- **Satellite imagery** (tip from a satellite company; they mentioned "AquGuard Technologies" as a free source — unverified; ESA Sentinel-2 / Copernicus is a known free source). Use as a *backup reference map* for terrain the drone has never flown over. Weakness = Air Force snow point: imagery can be old / snow-covered → own fresh breadcrumbs stay the primary map.
+- **Drone-to-drone (cooperative navigation)**: a drone with a valid position shares it with drones that lost GPS. Also a DETECT idea: drones cross-check each other (GPS says 500 m apart, radio/camera says 50 m → someone is spoofed). Weakness: link can be jammed; regional jamming hits all drones.
+- **5G / cell towers ("signals of opportunity", 5G positioning in 3GPP Rel-16)**: mainly a second witness for spoofing detection (GPS position vs towers heard). Weak: no coverage over forest/sea, towers destroyed/off in war zones, fake base stations exist, accuracy tens–hundreds of m outside cities.
+- **Unifying pitch message — "multi-source trust check"**: GPS is cross-checked against IMU (built), own camera map (building), satellite map, other drones, 5G. "One source can be spoofed — five at once is very hard." Security mindset = Den's angle.
+- Drone expert (met Fri): questions prepared (behaviour after alarm, required detection speed, camera vs satellite map in snow/night, realistic IMU drift, Terra lab access, cooperative nav, legal spoof testing, feedback). Record her answers + quotes here.
+
 ## Environment (Den's laptop)
 - Windows 11, NVIDIA GPU. User home: `C:\Users\den`.
 - Python 3.15 on Windows (if pip wheels fail, use `py install 3.12` and `py -3.12 ...`).
@@ -50,6 +58,7 @@ Pitch line: "When GPS is attacked, our drone detects it and flies home using a m
 - `analyze_log.py` — reads a PX4 .ulg log: prints failure injections / failsafes, PX4 reaction time, plots EKF vs ground truth altitude, horizontal error, xy_valid / GPS fix, GPS sample gaps. Run: `py analyze_log.py logs/18_23_09.ulg` → `log_analysis.png`.
 - `log_spoof_detect.py` — our detector on real SITL IMU/GPS from the log with an injected slow spoof; compares with a PX4-style 5σ gate, false-alarm check over 50 seeds, delay-vs-spoof-speed sweep. Run: `py log_spoof_detect.py logs/18_23_09.ulg` → `log_spoof_result.png`.
 - `logs/18_23_09.ulg` — SITL x500 flight: takeoff 59 s, `gps off` 113 s, `gps ok` 198 s, `gps wrong` 244 s (on ground).
+- `JOURNEY.md` — process log for jury/mentors (iterations, failures, fixes, mentor feedback table). Add a line after every meaningful step and every mentor talk.
 - `FRIEND_START.md` — onboarding for the teammate (setup, what to build: demo dashboard, baylands world, slides).
 - Python deps: `pip install numpy matplotlib pyulog`.
 
