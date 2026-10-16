@@ -64,8 +64,15 @@ Evidence: commits in this repo, plots, flight logs in `logs/`.
 - Checked the real basis: PX4 GPS data already has jamming-indicator / noise / AGC fields (real chips fill them; the simulator leaves them at 0).
 - → Concept extended: DETECT → REMEMBER → RETURN → **REPORT**.
 
+### 11. Pivot after talking to the military → swarm reroute (`swarm_reroute.py`)
+- Military: detection + return-to-base **already exists** for them. They want the swarm to **share the attack and still reach the target**.
+- Built DETECT → LOCATE → SHARE → REROUTE: the first jammed drone (scout) broadcasts its interference readings; the swarm estimates where GPS dies and plans around it.
+- **First version: drones looped** in and out of the zone. Two causes: (1) one drone's straight track can't tell which side the jammer is on → the "safe" estimate painted almost the whole map as dangerous; (2) the route planner treated the zone as a wall, so a drone at its edge found no way out and flew straight back in. Fixes: danger = cells where GPS dies with > 15 % probability; zone = expensive, not forbidden; never re-enter where GPS really died.
+- **Checked it isn't a lucky run:** 8 random jammer positions. Swarm 24/24 drones reach the target vs 21/24 alone; time without GPS 16 s (only the scout) vs 68 s; mission 16 % faster, 17 % less distance. Today's autopilot: 0/3.
+
 ## Mentor feedback log
 | When | Who | What they said | What we changed |
 |---|---|---|---|
 | Fri | Participant (networking) | "If the spoofer sends a fake but realistic-looking position, how can you tell?" Den had no clear answer. | Prepared the answer: we don't judge whether a position *looks* real, we check it against physics (IMU) and other sources; a spoofer must stay slower than IMU drift to hide, which bounds the damage. Added a short "how we detect spoofing" script for the pitch Q&A. |
+| Fri midday | Military (via teammate) | They already have spoofing/jamming detection + return-to-base. Want: inform other drones, swarm finds its own way around to still reach the destination ("like an LLM"). | Pivoted headline to DETECT → LOCATE → SHARE → REROUTE, built `swarm_reroute.py`; LLM positioned as mission advisor, deterministic planner flies. |
 | | | | |
