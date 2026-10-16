@@ -130,8 +130,7 @@ async function build() {
   caption(s, "Our swarm mission on a real satellite map (animated). Illustrative location: Gotland, Baltic Sea.", 7.25, tb + 0.15, 5.5, 0.5);
   s.addText("Satellite: Sentinel-2 cloudless 2016 © EOX IT Services GmbH (CC BY 4.0), contains modified Copernicus Sentinel data",
     { x: 7.25, y: tb + 0.6, w: 5.5, h: 0.4, fontSize: 8, color: C.accent5, margin: 0, isTextBox: true, objectName: "imagery credit" });
-  s.addNotes("0:00–0:10  DEN: We are Den and Guled. GPS is the single point of failure of today's drones. " +
-    "Our idea: when one drone gets jammed, the whole swarm learns and still completes the mission.");
+  s.addNotes("0:00–0:10  DEN: Hi, we are Den and Guled. When one drone gets jammed, our whole swarm learns from it — and still completes the mission.");
 
   // 2. Problem -------------------------------------------------------------
   pres.addSection({ title: "Problem" });
@@ -148,9 +147,7 @@ async function build() {
   picture(s, "log_analysis.png", 7.6, 1.5, 4.55, 1320 / 1200, "PX4 flight log during GPS jamming");
   stat(s, 7.6, 5.85, 2.2, 1.0, "5 s", "autopilot reaction time", C.accent3, 26);
   stat(s, 9.95, 5.85, 2.2, 1.0, "blind", "landing — never flies home", C.accent3, 26);
-  s.addNotes("0:10–0:40  DEN: Before writing code we interviewed the Swedish Air Force Helicopter Wing. Jamming happens really often, " +
-    "it must be detected as soon as possible, and snow hides the landmarks maps rely on. " +
-    "Then we tested the real PX4 autopilot: after GPS loss it needs 5 seconds, then lands blind wherever it is. It never comes home.");
+  s.addNotes("0:10–0:35  DEN: We started by talking to the Swedish Air Force: GPS jamming happens really often, and must be detected fast. Then we tested the real PX4 autopilot. After GPS is gone it needs 5 seconds — and then it lands blind, wherever it is.");
 
   // 3. Pivot + pipeline ----------------------------------------------------
   s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Problem" });
@@ -193,8 +190,7 @@ async function build() {
         line: { color: C.accent5, width: 0 }, objectName: "arrow " + i });
     }
   }
-  s.addNotes("0:40–1:00  GULED: On Friday the military told us: detect-and-return already exists. They want the jammed drone " +
-    "to warn the others, and the swarm to still reach the target. So we pivoted and built this pipeline — six steps, split between us.");
+  s.addNotes("0:35–0:55  GULED: On Friday the military told us: detect and return home — we already have that. What we need is a drone that warns the others, so the swarm still reaches the target. So we built this pipeline.");
 
   // 4. DETECT --------------------------------------------------------------
   pres.addSection({ title: "Solution" });
@@ -211,9 +207,7 @@ async function build() {
       options: { color: C.background2 } },
   ], { x: 0.6, y: 2.8, w: 12.15, h: 0.5, fontSize: 15, margin: 0, valign: "middle", isTextBox: true });
   picture(s, "log_spoof_result.png", 0.65, 3.5, 12.05, 2040 / 600, "Spoofing detection on real PX4 data");
-  s.addNotes("1:00–1:25  DEN: Detection is the foundation. Jamming: we react in 1 second, PX4 in 5. " +
-    "Spoofing is harder: a slow drag keeps a perfect GPS fix. But noise is random, and a spoofer always pushes one way — " +
-    "comparing GPS with the motion sensors, we catch it in 13 seconds. A PX4-style check never notices.");
+  s.addNotes("0:55–1:15  DEN: Step one: detect. Our monitor notices jamming in 1 second instead of 5. It even catches slow spoofing — fake GPS that looks perfect — by comparing GPS with the drone's own motion sensors.");
 
   // 5. NAVIGATE + LOCATE ---------------------------------------------------
   s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Solution" });
@@ -232,9 +226,7 @@ async function build() {
   stat(s, 6.85, b + 0.3, 2.85, 1.15, "~300 m", "one drone (typical)", C.accent6, 22);
   stat(s, 9.9, b + 0.3, 2.85, 1.15, "~120 m", "two drones (typical, 10 runs)", C.accent2, 22);
   caption(s, "GPS receivers measure interference — louder means closer.", 6.85, b + 1.55, 5.9);
-  s.addNotes("1:25–2:00  GULED: Without GPS the motion sensors drift — almost 2 km after 8.8 km. In snow the camera found 0 of 8 landmarks. " +
-    "Terrain matching with a laser altimeter compares the shape of the hills, which snow doesn't hide: 14.5 metres. " +
-    "And jammed drones become sensors: two of them locate the jammer to about 120 metres.");
+  s.addNotes("1:15–1:40  GULED: Without GPS, motion sensors alone drift 2 kilometres. In snow the camera sees nothing. But the shape of the hills survives snow: matching it with a laser altimeter keeps us within 14 metres. And jammed drones even help locate the jammer.");
 
   // 6. DECIDE --------------------------------------------------------------
   s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Solution" });
@@ -247,9 +239,7 @@ async function build() {
   await iconRow(s, 8.4, 3.9, 4.35, fa.FaShieldAlt, "Safety check on every action", "Battery reserve and limits — the AI never flies the drone");
   stat(s, 8.4, 5.2, 2.05, 1.15, "aborted", "today: GPS lost → flies home", C.accent3, 22);
   stat(s, 10.6, 5.2, 2.15, 1.15, "8 m", "from target: mission completed", C.accent2, 22);
-  s.addNotes("2:00–2:25  GULED: The military asked for a swarm that finds a solution on its own. Our AI mission brain assesses, measures and plans — " +
-    "but only through four safe tools, and every action passes a safety check. The AI decides what, tested code decides how. " +
-    "Today's system aborts; ours completes the mission 8 metres from the target.");
+  s.addNotes("1:40–2:00  GULED: The military asked for a swarm that finds its own solution. Our mission brain does that — with one rule: the AI decides what, tested code decides how. Every action passes a safety check.");
 
   // 7. SHARE + REROUTE -----------------------------------------------------
   s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Solution" });
@@ -261,9 +251,7 @@ async function build() {
   stat(s, 9.2, 2.7, 3.55, 1.05, "24 / 24", "with our swarm (8 random runs)", C.accent2, 24);
   stat(s, 9.2, 3.9, 3.55, 1.05, "16 s vs 68 s", "without GPS: swarm vs each alone", C.accent2, 24);
   stat(s, 9.2, 5.1, 3.55, 1.05, "−16 %", "mission time", C.accent4, 24);
-  s.addNotes("2:25–2:55  DEN: This is the core. Today all three drones fly into the jammer and are lost. " +
-    "In our swarm the first drone is a scout: it detects the jamming, backs out, and shares what it measured. The others plan around it. " +
-    "24 of 24 drones reach the target over 8 random setups, and only the scout ever loses GPS.");
+  s.addNotes("2:00–2:25  DEN: This is the core. Today, all three drones fly into the jammer and are lost. In our swarm the first drone is a scout: it gets jammed, backs out, and shares what it measured. The others fly around. 24 out of 24 reach the target.");
 
   // 8. LIVE PX4 -------------------------------------------------------------
   pres.addSection({ title: "Proof" });
@@ -278,9 +266,7 @@ async function build() {
   stat(s, 3.75, 5.65, 3.0, 1.15, "3 / 3", "on station at the target", C.accent2, 24);
   stat(s, 6.85, 5.65, 2.85, 1.15, "33–38 m", "stand-off, never inside the building", C.accent4, 24);
   stat(s, 9.85, 5.65, 2.9, 1.15, "7", "live test runs to get it working", C.accent6, 24);
-  s.addNotes("2:55–3:20  DEN: Not just a Python model: three real PX4 autopilots in Gazebo, at a military base with a jammer on the battlefield. " +
-    "The scout gets jammed, backs out blind on its own breadcrumbs and warns the others; all three end on station next to the target. " +
-    "It took seven live test runs to get there — every failure is in our process log.");
+  s.addNotes("2:25–2:45  DEN: And it is not just a model. Three real PX4 autopilots fly this mission live in a simulator. The scout gets jammed, the others go around — 3 of 3 end on station.");
 
   // 9. ATTACK ---------------------------------------------------------------
   s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Proof" });
@@ -294,9 +280,7 @@ async function build() {
   stat(s, 9.85, 1.55, 2.9, 1.25, "9 → 1", "drones lured into the jammer: no defence vs ours (6 runs)", C.accent2, 28);
   stat(s, 9.85, 3.0, 2.9, 1.25, "6 / 6", "times the liar was caught", C.accent2, 28);
   stat(s, 9.85, 4.45, 2.9, 1.25, "0", "honest drones wrongly rejected", C.accent2, 28);
-  s.addNotes("3:20–3:50  DEN: Guled asked: what if the enemy fakes the warnings? A captured drone with a valid key " +
-    "reports 'all quiet' over the jammer. Undefended, it lured 9 drones into the trap. Our rule: a warning is cheap to believe, " +
-    "an all-clear must be proven. Liar caught 6 out of 6, no honest drone rejected.");
+  s.addNotes("2:45–3:10  DEN: Guled asked: what if the enemy fakes the warnings? So we attacked our own system. Our rule: a warning is cheap to believe, but an all-clear must be proven against real evidence. The liar was caught 6 out of 6 times.");
 
   // 10. REAL TERRAIN (Guled) ---------------------------------------------------
   s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Proof" });
@@ -315,8 +299,7 @@ async function build() {
   stat(s, 9.45, 2.9, 3.3, 1.2, "0 / 25", "IMU only (~700 m typical)", C.accent3, 26);
   stat(s, 9.45, 4.3, 3.3, 1.2, "180 → 71 m", "radio jammed too: terrain only vs + MagNav (typical)", C.accent6, 26);
   stat(s, 9.45, 5.7, 3.3, 1.0, "6 → 8 / 25", "radio jammed too: success", C.accent6, 22);
-  s.addNotes("3:50–4:10  GULED: Then we tested on REAL terrain: the height map of Bråviken near Norrköping. With the radio link working, 25 of 25 missions " +
-    "stay within 50 metres. Honest finding: if the radio is jammed too, flat ground and water are hard — adding a magnetometer — MagNav — more than halves the error, but it is not solved yet.");
+  s.addNotes("3:10–3:30  GULED: Then we left made-up terrain behind and used the real height map of Bråviken, near Norrköping. 25 out of 25 missions stayed on track. Where it gets hard — flat ground and water — we show that honestly.");
   // 11. INSIDE THE ZONE + MAGNAV (Guled) ----
   s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Proof" });
   s.addText("Target inside the zone? The swarm is its own GPS", { placeholder: "title" });
@@ -333,9 +316,7 @@ async function build() {
   stat(s, 6.85, b + 0.3, 2.85, 1.15, "202 m", "terrain matching — blind over the sea", C.accent6, 24);
   stat(s, 9.9, b + 0.3, 2.85, 1.15, "38 m", "terrain + MagNav (typical, 20 km)", C.accent2, 24);
   caption(s, "It only listens — nothing to jam or spoof. Works over the Baltic, at night, in snow.", 6.85, b + 1.55, 5.9);
-  s.addNotes("4:10–4:30  GULED: But the enemy puts the jammer where it protects something, so the target is often inside. " +
-    "Drones at the edge keep GPS and measure their radio distance to the drone inside: the swarm is its own GPS, 1 metre instead of 59. " +
-    "And MagNav, the Earth's magnetic map, works over the sea and can't be jammed.");
+  s.addNotes("3:30–3:50  GULED: And if the target is inside the jammed zone? Drones at the edge still have GPS and measure their radio distance to the drone inside. The swarm becomes its own GPS — accurate to about 1 metre.");
 
 
   // 12. PROGRESS + PLAN -------------------------------------------------------
@@ -371,9 +352,7 @@ async function build() {
   await iconRow(s, 7.0, 3.1, 5.75, fa.FaSignal, "Real jamming indicators", "u-blox receivers already report interference to PX4");
   await iconRow(s, 7.0, 4.15, 5.75, fa.FaGlobeEurope, "AquaGuard Technologies", "Satellite/SAR imagery as backup map; our jammer reports as their data feed");
   await iconRow(s, 7.0, 5.2, 5.75, fa.FaUserCheck, "Operator in the loop", "Secure drone-to-drone link, human approval for reroutes");
-  s.addNotes("4:30–4:50  GULED: In 48 hours: four expert inputs, seventeen logged iterations, every failure documented. " +
-    "It is software only, so it runs on drones that already fly PX4. " +
-    "Next: real drones in Terra lab, real u-blox interference readings, and AquaGuard satellite imagery as a backup map.");
+  s.addNotes("3:50–4:10  GULED: We did all this in 48 hours, shaped by four expert conversations. It is software only, so it runs on drones that already exist. Next: real drones in Terra lab, here at LiU.");
 
   // 13. TEAM + CLOSE ----------------------------------------------------------
   s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Progress and team" });
@@ -409,7 +388,7 @@ async function build() {
     { text: "If the enemy fakes the warnings, physics exposes the liar.", options: { bold: false } },
   ], { x: 0.95, y: 4.7, w: 11.5, h: 1.8, fontSize: 26, bold: true, color: C.background1, valign: "middle", margin: 0,
     isTextBox: true });
-  s.addNotes("4:50–5:00  DEN: One drone gets jammed — the whole swarm learns. And if the enemy fakes the warnings, physics exposes the liar. Thank you.");
+  s.addNotes("4:10–4:25  DEN: One drone gets jammed — the whole swarm learns. And if the enemy fakes the warnings, physics exposes the liar. Thank you. (Pause before the last sentence.)");
 
   await pres.writeFile({ fileName: OUT });
   if (APPLY_THEME) {
