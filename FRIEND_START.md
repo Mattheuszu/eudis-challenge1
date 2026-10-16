@@ -10,8 +10,9 @@ Get the code (private repo — Den must add you as a collaborator first, accept 
 ```
 git clone https://github.com/Mattheuszu/eudis-challenge1.git
 cd eudis-challenge1
-pip install numpy matplotlib pyulog
+pip install numpy matplotlib pyulog pymavlink
 ```
+(Got this as a zip instead? Unzip it anywhere and work in that folder; it is a snapshot of the repo.)
 
 Git routine (see "Git workflow" in `CLAUDE.md`): `git pull` before you start, commit + push small steps often, work in your own new files.
 (If Python 3.15 wheels fail: `py install 3.12`, then use `py -3.12 -m pip ...` and `py -3.12 script.py`.)
@@ -38,8 +39,11 @@ See the "PX4 SITL cheat sheet" in `CLAUDE.md` for the `pxh>` commands.
 | `spoof_detect.py` → `result.png` | Toy 2D sim: simple check misses slow spoofing, our window detector catches it |
 | `analyze_log.py` → `log_analysis.png` | Real PX4 log: after GPS loss PX4 blind-lands in ~5 s, never returns home; EKF thinks it is at 1.3 m while on the ground, drifts 6.8 m |
 | `log_spoof_detect.py` → `log_spoof_result.png` | Our detector on real PX4 IMU/GPS + injected slow spoof: 0.5 m/s caught in 12.9 s, PX4-style gate misses it; 2/50 false alarms |
+| `demo_control.py` + `sim/demo.sdf` → `demo_screenshot.png` | **Live demo**: fly the PX4 drone with arrow keys, jam GPS with G. World with START helipad and point B. Our monitor ~1 s vs PX4 ~5 s; return home impossible without GPS. Run-sheet: `DEMO.md` |
+| `swarm_reroute.py` → `swarm_reroute.png`, `swarm_reroute.gif` | **New headline after military feedback: DETECT → LOCATE → SHARE → REROUTE.** Scout drone gets jammed and shares; swarm plans around. 8 random runs: swarm 24/24 reach target vs 21/24 alone, 16 s vs 68 s without GPS, 16 % faster; today's autopilot 0/3 |
+| `JOURNEY.md` | Process log for the jury (30 % of score): every step, failures and fixes, mentor feedback table |
 
-Key numbers for slides are in `CLAUDE.md` → Status.
+Key numbers for slides are in `CLAUDE.md` → Status and "Ideas collected Fri". **Pitch headline changed:** the military already has detect + return home; our new claim is "one drone jammed, the whole swarm learns" (see `CLAUDE.md` → MILITARY FEEDBACK).
 
 ## 3. Your tasks (visualisation, demo, slides)
 
