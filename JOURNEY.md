@@ -102,6 +102,12 @@ Evidence: commits in this repo, plots, flight logs in `logs/`.
 - It took 7 live test runs. What broke and how we fixed it: false GPS alarms on the ground with 3 drones (adaptive threshold), PX4 refused early takeoffs (retry), Windows UDP quirk, a route that went straight back into the jammer when the target point sat inside the cautious danger circle, drones overshooting turns (bigger margin), drone 2 too close behind the scout (longer launch gap), and two overlapping danger zones making drones loop (merge them, take the shorter way round).
 - Honest numbers: with 3 drones the laptop is busy, so our monitor needs ~3–4 s (1 s with one drone).
 
+### 16. Isabella's ideas and Guled's outside-the-box demos (Fri evening)
+- **Jamming Radar** (Guled): a flight-radar style replay of the swarm — exactly the Flightradar24-like view drone expert Isabella asked for. Shows interference reports, the shared danger map and every drone's track.
+- **Swarm as its own GPS** (Guled): our weak spot was that the swarm reaches the target by going *around* the jammer — but the enemy puts the jammer where it protects something. Edge drones that keep GPS measure their radio distance to the drone inside: 59 m → 1 m error.
+- **MagNav** (Guled): the Earth's magnetic map can't be jammed and works over the sea, where terrain matching goes blind (202 m → 38 m together).
+- **Pitch rules changed:** only the PPTX is judged, demos must be inside the slides → built a full 12-slide draft from all results for Guled to polish.
+
 ## Mentor feedback log
 | When | Who | What they said | What we changed |
 |---|---|---|---|

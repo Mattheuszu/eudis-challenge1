@@ -10,3 +10,6 @@ __pycache__/
 Thumbs.db
 .DS_Store
 .vscode/
+pitch/node_modules/
+pitch/package-lock.json
+pitch/qa/
