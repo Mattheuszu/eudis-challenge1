@@ -1,5 +1,6 @@
 # EUDIS Defence Hackathon 2026 — Challenge 1 (GNSS-denied navigation)
 
+> **RESULT (Sat 17 Oct): 2nd place in Challenge 1. The hackathon is over.**
 > **NEW SESSION? START HERE (updated Fri 16 Oct, late night).**
 > - **⚠ Sat 10:30: `pitch/GPS_Under_Attack_pitch.pptx` is Den's FINAL hand-edited deck (12 slides, radar slide removed). Do NOT run `node pitch/build_deck.js` — it would overwrite it. Den said: no more changes.**
 > - Last night of the hackathon. **Upload PPTX by Sat 17 Oct 12:30** (5 min pitch, only the slides are judged). Pitch Sat 13:30–15:30. Live demos Sat 9:00–12:00.

@@ -120,6 +120,9 @@ Evidence: commits in this repo, plots, flight logs in `logs/`.
 - **One recording run failed:** after its first escape the scout's new route led back into the jammer; it lost GPS twice and PX4's estimate broke (we think the extra load from screen capture slowed the simulator). We didn't use it.
 - Clean test run after the re-layout: our alarm after **1.0 s**, scout escaped and rejoined, **3/3 on station in under 2 minutes**. Den recorded the next run; edited into a 29 s video with captions (slide 8).
 
+### 19. Result
+- **2nd place in Challenge 1** (GNSS-denied navigation) at the EUDIS Defence Hackathon 2026, Linköping.
+
 ## Mentor feedback log
 | When | Who | What they said | What we changed |
 |---|---|---|---|
