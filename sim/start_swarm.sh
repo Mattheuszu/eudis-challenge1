@@ -11,7 +11,7 @@ bash "$HERE/install_world.sh" > /dev/null
 bash "$HERE/stop_swarm.sh" > /dev/null 2>&1 || true
 cd ~/PX4-Autopilot
 
-POSES=("0,0" "0,6" "0,-6")           # launch pads, Gazebo x East, y North (matches sim/base.sdf)
+POSES=("0,0,0.9" "0,6,0.9" "0,-6,0.9")  # on the launch platform (deck top 0.86 m), Gazebo x East, y North (matches sim/base.sdf)
 mkdir -p /tmp/swarm
 for ((i = 0; i < N; i++)); do
   echo "Starting drone $((i + 1)) at pad (${POSES[$i]}) ..."
