@@ -78,11 +78,12 @@ def main():
     while not (M.Ref.lat is not None and all(d.offset for d in M.drones)):
         M.draw(None)
         time.sleep(0.1)
-    if not gz_shot(OUT):
+    if not os.environ.get("NO_GZ") and not gz_shot(OUT):
         print("WARNING: gz screenshot failed - is the Gazebo window open?", flush=True)
     cam("x500_0", (-30.0, -40.0, 32.0))
     time.sleep(1.5)
-    threading.Thread(target=shooter, daemon=True).start()
+    if not os.environ.get("NO_GZ"):        # NO_GZ=1: test run without Gazebo screenshots (less load)
+        threading.Thread(target=shooter, daemon=True).start()
     phase("overview")
     time.sleep(3)
     M.act("mission")

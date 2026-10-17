@@ -42,11 +42,11 @@ from pymavlink import mavutil  # noqa: E402
 # ---------------- SCENE (must match sim/base.sdf; map frame = metres North, East of pad 1) ----------------
 N_DRONES = int(os.environ.get("N_DRONES", "3"))
 PADS = [(0.0, 0.0), (6.0, 0.0), (-6.0, 0.0)]            # (north, east) launch pads
-TARGET = (60.0, 80.0)                                    # enemy facility (north, east)
-JAMMER = (24.0, 32.0)                                    # jammer truck (north, east) - unknown to the drones
+TARGET = (-15.0, 109.0)                                  # enemy facility (north, east)
+JAMMER = (-7.0, 50.0)                                    # jammer truck (north, east) - unknown to the drones
 JAM_RADIUS = 20.0                                        # m, GPS dies inside this sphere (red dome)
 CRUISE_ALT = 12.0                                        # m above the pads
-STANDOFF = 34.0                                          # m from the target centre: observe, don't touch
+STANDOFF = 26.0                                          # m from the target centre: observe, don't touch
 FORMATION = 10.0                                         # m between drones on station
 LAUNCH_GAP = 30.0                                        # s between launches (drone 1 = scout)
 NOGO_RADIUS = 26.0                                       # m, assumed danger zone (typical jammer reach + margin)
@@ -579,7 +579,7 @@ ax = fig.add_subplot(gs[0])
 panel = fig.add_subplot(gs[1]); panel.axis("off")
 fig.suptitle("Live swarm mission  |  DETECT → ESCAPE → SHARE → REROUTE", fontsize=15, weight="bold")
 
-ax.set_xlim(-25, 105); ax.set_ylim(-25, 85); ax.set_aspect("equal"); ax.grid(alpha=0.2)
+ax.set_xlim(-25, 130); ax.set_ylim(-60, 50); ax.set_aspect("equal"); ax.grid(alpha=0.2)
 ax.set_xlabel("East [m]"); ax.set_ylabel("North [m]")
 ax.set_title("Map — where each drone believes it is", fontsize=11)
 ax.add_patch(Rectangle((-22, -14), 20, 28, color="#1a9e3f", alpha=0.10))
