@@ -113,6 +113,13 @@ Evidence: commits in this repo, plots, flight logs in `logs/`.
 - With the swarm's radio link working: **25/25 within 50 m (~4 m)**. IMU alone: 0/25.
 - **Honest finding:** real ground is flatter than our simulated hills and partly water. If the enemy also jams the radio, terrain matching alone succeeds only 6/25; MagNav cuts the typical error 180 → 71 m (8/25). Not solved yet — now we know exactly where to work.
 
+## Sat 17 Oct
+
+### 18. Better live video for the pitch
+- Rebuilt the simulator scene for a clearer story: a raised launch platform for the 3 drones, a red/white cordon and a floating marker at the target, and the whole scene moved onto an open field so no trees are near the routes. Base → jammer 50 m, jammer → target 60 m.
+- **One recording run failed:** after its first escape the scout's new route led back into the jammer; it lost GPS twice and PX4's estimate broke (we think the extra load from screen capture slowed the simulator). We didn't use it.
+- Clean test run after the re-layout: our alarm after **1.0 s**, scout escaped and rejoined, **3/3 on station in under 2 minutes**. Den recorded the next run; edited into a 29 s video with captions (slide 8).
+
 ## Mentor feedback log
 | When | Who | What they said | What we changed |
 |---|---|---|---|

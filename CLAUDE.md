@@ -6,6 +6,7 @@
 > - Speaker notes = script with ONE hero number per slide, ~470 words (~3:40), DEN/GULED marked. Number colours fixed (green ours, red today, amber limit, blue fact) + colour key. Q&A cheat sheet: `pitch/QA.md`.
 > - Decided: stay on Challenge 1 only (no Challenge 2 mention). If PowerPoint has the deck open, the build fails with EBUSY → close it, or set env PPTX_OUT to another path.
 > - Saturday morning TODO: rehearse 3–4× with a timer, read QA.md, optional real Claude run of `navigation/ai_commander.py` (API key), get one mentor quote at the demo, upload by 12:30. Delete stale `pitch/GPS_Under_Attack_pitch_v2.pptx`.
+> - Sat morning: base world re-laid out (open field, raised launch platform, target cordon; base→jammer 50 m, jammer→target 60 m, stand-off 26 m). Slide 8 = Den's screen recording edited by `media/make_screenrec_video.py` → `media/gazebo_mission.mp4/.gif` (29 s).
 > - Den: chat in English now. Beginner with terminals: say PowerShell vs Ubuntu/WSL vs pxh>, one command per block. Keep answers short.
 
 Context handoff for Claude Code. The user (Den) now prefers English in chat; code and comments in English.

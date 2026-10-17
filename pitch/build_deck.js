@@ -277,14 +277,13 @@ async function build() {
   s = pres.addSlide({ masterName: "CONTENT_DARK", sectionTitle: "Proof" });
   s.addText("Live: 3 real PX4 autopilots fly the mission in Gazebo", { placeholder: "title" });
   tag(s, "PROGRESS");
-  b = picture(s, "media/gazebo_mission.gif", 0.65, 1.5, 5.35, 640 / 434, "Animated time-lapse of the live PX4 mission in Gazebo");
-  caption(s, "Recorded live from Gazebo (time-lapse). Sharper video: media/gazebo_mission.mp4", 0.6, b + 0.12, 5.85);
-  b = picture(s, "mission_screenshot.png", 6.45, 1.5, 6.25, 1085 / 658, "Mission app after a live run");
-  caption(s, "Our mission app: every drone's position, GPS state and the shared danger zone", 6.4, b + 0.12, 6.35);
-  stat(s, 0.6, 5.65, 3.0, 1.15, "1 / 3", "drones ever jammed (the scout)", C.accent6, 24);
-  stat(s, 3.75, 5.65, 3.0, 1.15, "3 / 3", "on station at the target", C.accent2, 24);
-  stat(s, 6.85, 5.65, 2.85, 1.15, "33–38 m", "stand-off, never inside the building", C.accent4, 24);
-  stat(s, 9.85, 5.65, 2.9, 1.15, "7", "live test runs to get it working", C.accent4, 24);
+  b = picture(s, "media/gazebo_mission.gif", 0.65, 1.45, 9.1, 16 / 9, "Live PX4 mission: Gazebo view and our mission app");
+  caption(s, "Recorded live, sped up (~×3). Left: Gazebo 3D view · right: our mission app. Full video: media/gazebo_mission.mp4",
+    0.6, b + 0.12, 9.2);
+  stat(s, 10.05, 1.45, 2.7, 1.15, "1.0 s", "our alarm after GPS loss (live)", C.accent2, 24);
+  stat(s, 10.05, 2.75, 2.7, 1.15, "1 / 3", "drones ever jammed (the scout)", C.accent6, 24);
+  stat(s, 10.05, 4.05, 2.7, 1.15, "3 / 3", "on station at the target", C.accent2, 24);
+  stat(s, 10.05, 5.35, 2.7, 1.15, "7", "live test runs to get it working", C.accent4, 24);
   s.addNotes("2:25–2:45  DEN: And it is not just a model. Three real PX4 autopilots fly this mission live in a simulator. The scout gets jammed, the others go around — 3 of 3 end on station.");
 
   // 9. ATTACK ---------------------------------------------------------------
