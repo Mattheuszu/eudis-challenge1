@@ -1,6 +1,7 @@
 # EUDIS Defence Hackathon 2026 — Challenge 1 (GNSS-denied navigation)
 
 > **NEW SESSION? START HERE (updated Fri 16 Oct, late night).**
+> - **⚠ Sat 10:30: `pitch/GPS_Under_Attack_pitch.pptx` is Den's FINAL hand-edited deck (12 slides, radar slide removed). Do NOT run `node pitch/build_deck.js` — it would overwrite it. Den said: no more changes.**
 > - Last night of the hackathon. **Upload PPTX by Sat 17 Oct 12:30** (5 min pitch, only the slides are judged). Pitch Sat 13:30–15:30. Live demos Sat 9:00–12:00.
 > - **Deck is FINAL unless rehearsal shows a problem:** `pitch/GPS_Under_Attack_pitch.pptx` (13 slides, rebuilt from `node pitch/build_deck.js`; PDF backup `pitch/GPS_Under_Attack_pitch.pdf`). Order: title · problem · military pivot · detect · navigate+locate · AI brain · swarm reroute · live PX4 · attack · real terrain (Bråviken) · target inside zone · progress + adoption · team.
 > - Speaker notes = script with ONE hero number per slide, ~470 words (~3:40), DEN/GULED marked. Number colours fixed (green ours, red today, amber limit, blue fact) + colour key. Q&A cheat sheet: `pitch/QA.md`.
